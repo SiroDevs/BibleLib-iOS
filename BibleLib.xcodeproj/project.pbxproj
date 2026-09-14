@@ -1,0 +1,672 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		173314E42DC159DB00318DD8 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 173314E32DC159DB00318DD8 /* Swinject */; };
+		173F37F82E61BDE90093421E /* SwiftUIModal in Frameworks */ = {isa = PBXBuildFile; productRef = 173F37F72E61BDE90093421E /* SwiftUIModal */; };
+		1796FDF92E5484FD00298DBF /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = 1796FDF82E5484FD00298DBF /* SwiftUIPager */; };
+		17B82DAF2E5920D600C58824 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 17B82DAE2E5920D600C58824 /* RevenueCatUI */; };
+		17B82DB12E5920DD00C58824 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 17B82DB02E5920DD00C58824 /* RevenueCat */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		175D13BA2DC112D300A6191A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 175D139F2DC112BB00A6191A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 175D13A62DC112BB00A6191A;
+			remoteInfo = BibleLib;
+		};
+		175D13C42DC112D300A6191A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 175D139F2DC112BB00A6191A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 175D13A62DC112BB00A6191A;
+			remoteInfo = BibleLib;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		175D13A72DC112BB00A6191A /* BibleLib.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BibleLib.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		175D13B92DC112D300A6191A /* BibleLibTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BibleLibTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		175D13C32DC112D300A6191A /* BibleLibUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BibleLibUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		175D13A92DC112BB00A6191A /* BibleLib */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = BibleLib;
+			sourceTree = "<group>";
+		};
+		175D13BC2DC112D300A6191A /* BibleLibTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = BibleLibTests;
+			sourceTree = "<group>";
+		};
+		175D13C62DC112D400A6191A /* BibleLibUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = BibleLibUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		175D13A42DC112BB00A6191A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				173F37F82E61BDE90093421E /* SwiftUIModal in Frameworks */,
+				17B82DAF2E5920D600C58824 /* RevenueCatUI in Frameworks */,
+				173314E42DC159DB00318DD8 /* Swinject in Frameworks */,
+				17B82DB12E5920DD00C58824 /* RevenueCat in Frameworks */,
+				1796FDF92E5484FD00298DBF /* SwiftUIPager in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		175D13B62DC112D300A6191A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		175D13C02DC112D300A6191A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		173314E22DC159DB00318DD8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		175D139E2DC112BB00A6191A = {
+			isa = PBXGroup;
+			children = (
+				175D13A92DC112BB00A6191A /* BibleLib */,
+				175D13BC2DC112D300A6191A /* BibleLibTests */,
+				175D13C62DC112D400A6191A /* BibleLibUITests */,
+				173314E22DC159DB00318DD8 /* Frameworks */,
+				175D13A82DC112BB00A6191A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		175D13A82DC112BB00A6191A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				175D13A72DC112BB00A6191A /* BibleLib.app */,
+				175D13B92DC112D300A6191A /* BibleLibTests.xctest */,
+				175D13C32DC112D300A6191A /* BibleLibUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		175D13A62DC112BB00A6191A /* BibleLib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 175D13CD2DC112D400A6191A /* Build configuration list for PBXNativeTarget "BibleLib" */;
+			buildPhases = (
+				175D13A32DC112BB00A6191A /* Sources */,
+				175D13A42DC112BB00A6191A /* Frameworks */,
+				175D13A52DC112BB00A6191A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				175D13A92DC112BB00A6191A /* BibleLib */,
+			);
+			name = BibleLib;
+			packageProductDependencies = (
+				173314E32DC159DB00318DD8 /* Swinject */,
+				1796FDF82E5484FD00298DBF /* SwiftUIPager */,
+				17B82DAE2E5920D600C58824 /* RevenueCatUI */,
+				17B82DB02E5920DD00C58824 /* RevenueCat */,
+				173F37F72E61BDE90093421E /* SwiftUIModal */,
+			);
+			productName = BibleLib;
+			productReference = 175D13A72DC112BB00A6191A /* BibleLib.app */;
+			productType = "com.apple.product-type.application";
+		};
+		175D13B82DC112D300A6191A /* BibleLibTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 175D13D02DC112D400A6191A /* Build configuration list for PBXNativeTarget "BibleLibTests" */;
+			buildPhases = (
+				175D13B52DC112D300A6191A /* Sources */,
+				175D13B62DC112D300A6191A /* Frameworks */,
+				175D13B72DC112D300A6191A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				175D13BB2DC112D300A6191A /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				175D13BC2DC112D300A6191A /* BibleLibTests */,
+			);
+			name = BibleLibTests;
+			packageProductDependencies = (
+			);
+			productName = BibleLibTests;
+			productReference = 175D13B92DC112D300A6191A /* BibleLibTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		175D13C22DC112D300A6191A /* BibleLibUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 175D13D32DC112D400A6191A /* Build configuration list for PBXNativeTarget "BibleLibUITests" */;
+			buildPhases = (
+				175D13BF2DC112D300A6191A /* Sources */,
+				175D13C02DC112D300A6191A /* Frameworks */,
+				175D13C12DC112D300A6191A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				175D13C52DC112D300A6191A /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				175D13C62DC112D400A6191A /* BibleLibUITests */,
+			);
+			name = BibleLibUITests;
+			packageProductDependencies = (
+			);
+			productName = BibleLibUITests;
+			productReference = 175D13C32DC112D300A6191A /* BibleLibUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		175D139F2DC112BB00A6191A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1630;
+				LastUpgradeCheck = 1630;
+				TargetAttributes = {
+					175D13A62DC112BB00A6191A = {
+						CreatedOnToolsVersion = 16.3;
+					};
+					175D13B82DC112D300A6191A = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 175D13A62DC112BB00A6191A;
+					};
+					175D13C22DC112D300A6191A = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 175D13A62DC112BB00A6191A;
+					};
+				};
+			};
+			buildConfigurationList = 175D13A22DC112BB00A6191A /* Build configuration list for PBXProject "BibleLib" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 175D139E2DC112BB00A6191A;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1733149D2DC1499100318DD8 /* XCRemoteSwiftPackageReference "Swinject" */,
+				1796FDF72E5484BE00298DBF /* XCRemoteSwiftPackageReference "SwiftUIPager" */,
+				1752236B2E58CFBE00A2AD93 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
+				173F37F62E61BDCE0093421E /* XCRemoteSwiftPackageReference "SwiftUIModal" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 175D13A82DC112BB00A6191A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				175D13A62DC112BB00A6191A /* BibleLib */,
+				175D13B82DC112D300A6191A /* BibleLibTests */,
+				175D13C22DC112D300A6191A /* BibleLibUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		175D13A52DC112BB00A6191A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		175D13B72DC112D300A6191A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		175D13C12DC112D300A6191A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		175D13A32DC112BB00A6191A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		175D13B52DC112D300A6191A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		175D13BF2DC112D300A6191A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		175D13BB2DC112D300A6191A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 175D13A62DC112BB00A6191A /* BibleLib */;
+			targetProxy = 175D13BA2DC112D300A6191A /* PBXContainerItemProxy */;
+		};
+		175D13C52DC112D300A6191A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 175D13A62DC112BB00A6191A /* BibleLib */;
+			targetProxy = 175D13C42DC112D300A6191A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		175D13CB2DC112D400A6191A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = Q7CNPE587D;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		175D13CC2DC112D400A6191A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Q7CNPE587D;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		175D13CE2DC112D400A6191A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconStg;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 823;
+				DEVELOPMENT_TEAM = Q7CNPE587D;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = BibleLib;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.823;
+				PRODUCT_BUNDLE_IDENTIFIER = com.songlib.stg;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		175D13CF2DC112D400A6191A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 823;
+				DEVELOPMENT_TEAM = Q7CNPE587D;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = BibleLib;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.823;
+				PRODUCT_BUNDLE_IDENTIFIER = com.songlib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		175D13D12DC112D400A6191A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q7CNPE587D;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.BibleLibTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BibleLib.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BibleLib";
+			};
+			name = Debug;
+		};
+		175D13D22DC112D400A6191A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q7CNPE587D;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.BibleLibTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BibleLib.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BibleLib";
+			};
+			name = Release;
+		};
+		175D13D42DC112D400A6191A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q7CNPE587D;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.BibleLibUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BibleLib;
+			};
+			name = Debug;
+		};
+		175D13D52DC112D400A6191A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q7CNPE587D;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.BibleLibUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BibleLib;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		175D13A22DC112BB00A6191A /* Build configuration list for PBXProject "BibleLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				175D13CB2DC112D400A6191A /* Debug */,
+				175D13CC2DC112D400A6191A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		175D13CD2DC112D400A6191A /* Build configuration list for PBXNativeTarget "BibleLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				175D13CE2DC112D400A6191A /* Debug */,
+				175D13CF2DC112D400A6191A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		175D13D02DC112D400A6191A /* Build configuration list for PBXNativeTarget "BibleLibTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				175D13D12DC112D400A6191A /* Debug */,
+				175D13D22DC112D400A6191A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		175D13D32DC112D400A6191A /* Build configuration list for PBXNativeTarget "BibleLibUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				175D13D42DC112D400A6191A /* Debug */,
+				175D13D52DC112D400A6191A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1733149D2DC1499100318DD8 /* XCRemoteSwiftPackageReference "Swinject" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Swinject/Swinject.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.1;
+			};
+		};
+		173F37F62E61BDCE0093421E /* XCRemoteSwiftPackageReference "SwiftUIModal" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nonameplum/SwiftUIModal";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.3;
+			};
+		};
+		1752236B2E58CFBE00A2AD93 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.35.0;
+			};
+		};
+		1796FDF72E5484BE00298DBF /* XCRemoteSwiftPackageReference "SwiftUIPager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/fermoya/SwiftUIPager.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		173314E32DC159DB00318DD8 /* Swinject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1733149D2DC1499100318DD8 /* XCRemoteSwiftPackageReference "Swinject" */;
+			productName = Swinject;
+		};
+		173F37F72E61BDE90093421E /* SwiftUIModal */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 173F37F62E61BDCE0093421E /* XCRemoteSwiftPackageReference "SwiftUIModal" */;
+			productName = SwiftUIModal;
+		};
+		1796FDF82E5484FD00298DBF /* SwiftUIPager */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1796FDF72E5484BE00298DBF /* XCRemoteSwiftPackageReference "SwiftUIPager" */;
+			productName = SwiftUIPager;
+		};
+		17B82DAE2E5920D600C58824 /* RevenueCatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1752236B2E58CFBE00A2AD93 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCatUI;
+		};
+		17B82DB02E5920DD00C58824 /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1752236B2E58CFBE00A2AD93 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCat;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 175D139F2DC112BB00A6191A /* Project object */;
+}

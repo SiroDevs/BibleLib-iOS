@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788.4" systemVersion="24E248" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="CDBible" representedClassName="CDBible" syncable="YES" codeGenerationType="class">
+        <attribute name="abbreviation" optional="YES" attributeType="String"/>
+        <attribute name="addedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="bibleDescription" optional="YES" attributeType="String"/>
+        <attribute name="countryName" optional="YES" attributeType="String"/>
+        <attribute name="downloadFailed" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="downloadProgress" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="isDownloaded" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="languageName" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="scriptDirection" optional="YES" attributeType="String"/>
+        <attribute name="sortOrder" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="CDBook" representedClassName="CDBook" syncable="YES" codeGenerationType="class">
+        <attribute name="abbreviation" optional="YES" attributeType="String"/>
+        <attribute name="bibleAbbr" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="nameLong" optional="YES" attributeType="String"/>
+        <attribute name="sortOrder" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="CDChapter" representedClassName="CDChapter" syncable="YES" codeGenerationType="class">
+        <attribute name="bibleAbbr" optional="YES" attributeType="String"/>
+        <attribute name="bookId" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="number" optional="YES" attributeType="String"/>
+        <attribute name="reference" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CDVerse" representedClassName="CDVerse" syncable="YES" codeGenerationType="class">
+        <attribute name="bibleAbbr" optional="YES" attributeType="String"/>
+        <attribute name="bookId" optional="YES" attributeType="String"/>
+        <attribute name="cachedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="chapterId" optional="YES" attributeType="String"/>
+        <attribute name="contentJson" optional="YES" attributeType="String"/>
+        <attribute name="verseCount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+</model>
