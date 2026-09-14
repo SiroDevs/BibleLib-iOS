@@ -2,8 +2,7 @@
 //  ChapterDTO.swift
 //  BibleLib
 //
-//  Matches `{abbr}/chapters.json` — mirrors Android's ChapterDto /
-//  ChaptersResponse (chapters grouped by book id).
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

@@ -2,15 +2,7 @@
 //  ChapterContentDTO.swift
 //  BibleLib
 //
-//  Matches `{abbr}/verses/{bookId}/{chapter}.json` — mirrors Android's
-//  ChapterContentDto / ContentItemDto exactly, including the two quirks
-//  the real payload requires handling:
-//
-//  1. `content` can contain literal JSON `null` entries — decoded as
-//     `[ContentItemDTO?]` and skipped rather than failing the chapter.
-//  2. `attrs` values are sometimes numbers/booleans instead of strings —
-//     LenientStringMap below mirrors Android's LenientAttrsAdapter by
-//     coercing any JSON scalar to its string form.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

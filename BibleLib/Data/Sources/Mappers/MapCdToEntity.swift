@@ -2,7 +2,7 @@
 //  MapCdToEntity.swift
 //  BibleLib
 //
-//  Same role as SwahiLib's MapCdToEntity.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

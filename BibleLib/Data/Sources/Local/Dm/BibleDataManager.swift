@@ -2,11 +2,7 @@
 //  BibleDataManager.swift
 //  BibleLib
 //
-//  Same pattern as SwahiLib's WordDataManager, scoped to the 4 entities
-//  step 1 needs. Note: this writes through the main-queue viewContext
-//  (wrapped in `performAndWait`) rather than a private background context
-//  — fine for a bare-minimum single-Bible download, but a real background
-//  context is worth adding once whole-Bible downloads need to feel fast.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import CoreData

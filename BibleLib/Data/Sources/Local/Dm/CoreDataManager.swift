@@ -2,8 +2,7 @@
 //  CoreDataManager.swift
 //  BibleLib
 //
-//  Same pattern as SwahiLib's CoreDataManager, pointed at BibleLib's own
-//  .xcdatamodeld.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import CoreData

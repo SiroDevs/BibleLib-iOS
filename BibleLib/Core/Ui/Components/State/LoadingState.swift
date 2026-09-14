@@ -2,8 +2,7 @@
 //  LoadingState.swift
 //  BibleLib
 //
-//  Same role as SwahiLib's LoadingState, rebuilt against system colors
-//  since this project doesn't have SwahiLib's asset catalog / palette.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI

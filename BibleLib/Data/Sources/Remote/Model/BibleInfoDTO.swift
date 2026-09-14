@@ -2,7 +2,7 @@
 //  BibleInfoDTO.swift
 //  BibleLib
 //
-//  Matches `info.json` — mirrors Android's BibleInfoDto exactly.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

@@ -2,7 +2,7 @@
 //  BookDTO.swift
 //  BibleLib
 //
-//  Matches `{abbr}/books.json` — mirrors Android's BookDto.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

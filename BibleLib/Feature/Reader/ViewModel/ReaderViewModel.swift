@@ -2,11 +2,7 @@
 //  ReaderViewModel.swift
 //  BibleLib
 //
-//  Bare-minimum stand-in for Android's Reader controllers: loads books for
-//  the given Bible, walks chapters within a book and across book boundaries,
-//  and reads cached verse content back from Core Data. No parallel Bibles,
-//  annotations, downloads-from-the-reader, page curl, or scripture queue
-//  yet — those are later steps.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

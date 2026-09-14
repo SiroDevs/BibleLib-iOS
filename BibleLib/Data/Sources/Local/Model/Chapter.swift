@@ -2,7 +2,7 @@
 //  Chapter.swift
 //  BibleLib
 //
-//  Mirrors Android's ChapterEntity.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

@@ -2,6 +2,8 @@
 //  EmptyState.swift
 //  BibleLib
 //
+//  Created by @sirodevs on 12/09/2026.
+//
 
 import SwiftUI
 

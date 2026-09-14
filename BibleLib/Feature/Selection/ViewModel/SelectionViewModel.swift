@@ -2,10 +2,7 @@
 //  SelectionViewModel.swift
 //  BibleLib
 //
-//  Bare-minimum stand-in for Android's FirstTimeSelectionController: fetch
-//  the Bible list, let the user multi-select + pick a primary, download the
-//  selected ones. No region/language grouping or returning-user re-selection
-//  flow yet — that's a step-2 polish item.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

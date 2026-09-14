@@ -2,7 +2,7 @@
 //  NetworkUtils.swift
 //  BibleLib
 //
-//  Carried over unchanged from SwahiLib's footprint — this is app-agnostic.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

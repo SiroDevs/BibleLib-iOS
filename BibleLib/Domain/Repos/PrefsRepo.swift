@@ -2,9 +2,7 @@
 //  PrefsRepo.swift
 //  BibleLib
 //
-//  Step 1 subset of what the Android app keeps in DataStore. More flags
-//  (theme, font size, multi-Bible list, donation reminders...) land here
-//  as later steps are ported — same shape as SwahiLib's PrefsRepo.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

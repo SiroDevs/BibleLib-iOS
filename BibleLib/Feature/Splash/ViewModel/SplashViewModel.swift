@@ -2,8 +2,7 @@
 //  SplashViewModel.swift
 //  BibleLib
 //
-//  Trimmed down from SwahiLib's SplashViewModel — no subscription check,
-//  BibleLib doesn't have one.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

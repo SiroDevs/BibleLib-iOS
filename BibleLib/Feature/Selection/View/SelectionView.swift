@@ -2,8 +2,7 @@
 //  SelectionView.swift
 //  BibleLib
 //
-//  Tap to select/deselect, long-press (or the star button) to set primary.
-//  Bare minimum: no region/language grouping yet (see SelectionViewModel).
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI

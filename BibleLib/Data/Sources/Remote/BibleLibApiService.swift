@@ -2,8 +2,7 @@
 //  BibleLibApiService.swift
 //  BibleLib
 //
-//  Mirrors Android's BibleLibService (Retrofit interface): four flat,
-//  pre-generated JSON endpoints, no query params, no pagination.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

@@ -2,10 +2,7 @@
 //  BibleLibApp.swift
 //  BibleLib
 //
-//  Step 1 bare-minimum scaffold, built on the same architectural footprint
-//  as SwahiLib (Core/Di, Domain, Data, Feature) so later features slot in
-//  the same way. No RevenueCat/notifications yet — BibleLib doesn't need
-//  them for the core reading loop.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI

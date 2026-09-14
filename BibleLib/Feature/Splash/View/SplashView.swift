@@ -2,6 +2,8 @@
 //  SplashView.swift
 //  BibleLib
 //
+//  Created by @sirodevs on 12/09/2026.
+//
 
 import SwiftUI
 
@@ -39,27 +41,37 @@ struct SplashView: View {
     }
 }
 
-private struct SplashContent: View {
+struct SplashContent: View {
     var body: some View {
-        VStack(spacing: 12) {
+        VStack {
             Spacer()
-            Image(systemName: "book.closed.fill")
+            
+            Image(.mainIcon)
                 .resizable()
-                .scaledToFit()
-                .frame(width: 96, height: 96)
-                .foregroundColor(.accentColor)
+                .frame(width: 200, height: 200)
+
             Text(AppConstants.appTitle)
-                .font(.system(size: 40, weight: .bold))
-            Text(AppConstants.appTagline)
-                .font(.system(size: 18, weight: .medium))
-                .foregroundColor(.secondary)
+                .font(.system(size: 50, weight: .bold))
+                .kerning(5)
+                .foregroundColor(.primary1)
+                .padding(.top, 5)
+            
             Spacer()
-        }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+            
+            Divider()
+                .frame(height: 1)
+                .padding(.horizontal, 100)
+                .background(.onPrimaryContainer)
+
+            Text(AppConstants.appCredits)
+                .font(.system(size: 16))
+                .foregroundColor(.primary1)
+            .padding(.top, 20)
+
+            Spacer().frame(height: 20)
+        }.padding()
     }
 }
-
 #Preview {
     SplashView()
 }

@@ -2,7 +2,7 @@
 //  Bible.swift
 //  BibleLib
 //
-//  Mirrors Android's BibleEntity.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

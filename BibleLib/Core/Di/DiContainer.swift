@@ -2,7 +2,7 @@
 //  DiContainer.swift
 //  BibleLib
 //
-//  Same pattern as SwahiLib's DiContainer.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Swinject

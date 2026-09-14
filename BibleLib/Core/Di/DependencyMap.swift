@@ -2,7 +2,7 @@
 //  DependencyMap.swift
 //  BibleLib
 //
-//  Same Swinject registration pattern as SwahiLib, scoped to step 1.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Swinject

@@ -2,10 +2,7 @@
 //  Verse.swift
 //  BibleLib
 //
-//  VerseDisplay mirrors Android's VerseDisplay (core/common/entity/Basics.kt)
-//  — a single verse already flattened out of the chapter's raw content tree.
-//  VerseChapterContent mirrors VerseEntity: all of a chapter's verses cached
-//  together as one row, keyed by (bibleAbbr, chapterId).
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

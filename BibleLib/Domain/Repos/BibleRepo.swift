@@ -2,15 +2,7 @@
 //  BibleRepo.swift
 //  BibleLib
 //
-//  Mirrors Android's BibleRepo: fetch the Bible list, download one Bible
-//  (books → chapters → verses, verses fetched with bounded concurrency
-//  across books), and read back what's stored locally.
-//
-//  Bare-minimum trims vs. Android: no RetryPolicy (a failed chapter is
-//  just skipped, a failed books/chapters fetch fails the whole download —
-//  add backoff/retry as a step 2 polish item), and Core Data writes go
-//  through the shared viewContext rather than a dedicated background
-//  context (see BibleDataManager).
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

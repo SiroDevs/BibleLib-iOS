@@ -2,9 +2,7 @@
 //  ReaderView.swift
 //  BibleLib
 //
-//  Bare-minimum reader: a scrolling list of verses for the current chapter,
-//  plus next/previous chapter buttons. No page-curl animation, no
-//  parallel-Bible layout, no tap-to-select/bookmark/share yet.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI
