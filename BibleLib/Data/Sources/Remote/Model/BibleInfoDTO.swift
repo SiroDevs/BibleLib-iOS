@@ -15,6 +15,30 @@ struct BibleInfoDTO: Decodable {
     let language: BibleLangDTO
     let countries: [BibleCountryDTO]
     let info: String
+    /// Folder the Bible's books/chapters/verses live under. Blank means "use the abbreviation".
+    let path: String
+
+    enum CodingKeys: String, CodingKey {
+        case name, description, abbreviation, tagline, language, countries, info, path
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        name = try c.decode(String.self, forKey: .name)
+        description = try c.decode(String.self, forKey: .description)
+        abbreviation = try c.decode(String.self, forKey: .abbreviation)
+        tagline = try c.decode(String.self, forKey: .tagline)
+        language = try c.decode(BibleLangDTO.self, forKey: .language)
+        countries = try c.decode([BibleCountryDTO].self, forKey: .countries)
+        info = try c.decode(String.self, forKey: .info)
+        path = try c.decodeIfPresent(String.self, forKey: .path) ?? ""
+    }
+
+    /// Android's `primaryCountryName()`.
+    func primaryCountryName() -> String {
+        let first = countries.first?.name ?? ""
+        return first.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Other" : first
+    }
 }
 
 struct BibleLangDTO: Decodable {

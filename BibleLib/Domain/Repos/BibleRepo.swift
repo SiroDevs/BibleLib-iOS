@@ -15,6 +15,8 @@ protocol BibleRepoProtocol {
     func localBooks(abbr: String) -> [Book]
     func localChapters(abbr: String, bookId: String) -> [Chapter]
     func localVerses(abbr: String, chapterId: String) -> VerseChapterContent?
+    func deleteBible(abbr: String)
+    func clearBibleContent(abbr: String)
 }
 
 final class BibleRepo: BibleRepoProtocol {
@@ -31,8 +33,32 @@ final class BibleRepo: BibleRepoProtocol {
         self.bibleData = bibleData
     }
 
+    /// Mirrors Android: read the group list, fetch every group's Bibles
+    /// concurrently (a failing group is skipped), keep group order.
     func fetchAvailableBibles() async throws -> [BibleInfoDTO] {
-        try await api.fetchBiblesInfo()
+        let groups = try await api.fetchGroups()
+        let api = self.api
+
+        return await withTaskGroup(of: (Int, [BibleInfoDTO]).self) { taskGroup in
+            for (index, group) in groups.enumerated() {
+                taskGroup.addTask {
+                    do {
+                        return (index, try await api.fetchGroupInfo(group: group))
+                    } catch {
+                        print("⚠️ Couldn't fetch group '\(group)', skipping: \(error.localizedDescription)")
+                        return (index, [])
+                    }
+                }
+            }
+            var results: [(Int, [BibleInfoDTO])] = []
+            for await result in taskGroup { results.append(result) }
+            return results.sorted { $0.0 < $1.0 }.flatMap { $0.1 }
+        }
+    }
+
+    private func resolvePath(_ abbr: String) -> String {
+        let path = bibleData.fetchBibles().first { $0.abbreviation == abbr }?.path ?? ""
+        return path.isEmpty ? abbr : path
     }
 
     func saveBibles(_ bibles: [Bible]) {
@@ -44,6 +70,8 @@ final class BibleRepo: BibleRepoProtocol {
     }
 
     func downloadBible(abbr: String, onProgress: @escaping (String, Double) -> Void = { _, _ in }) async throws {
+        let path = resolvePath(abbr)
+
         func report(_ step: String, _ progress: Double) {
             bibleData.updateProgress(abbr: abbr, progress: progress)
             onProgress(step, progress)
@@ -51,14 +79,14 @@ final class BibleRepo: BibleRepoProtocol {
 
         do {
             report("Fetching books…", 0.05)
-            let bookDTOs = try await api.fetchBooks(abbr: abbr)
+            let bookDTOs = try await api.fetchBooks(path: path)
             let books = bookDTOs.enumerated().map { index, dto in
                 Book(id: dto.id, bibleAbbr: abbr, abbreviation: dto.abbreviation, name: dto.name, nameLong: dto.nameLong, sortOrder: index)
             }
             bibleData.saveBooks(books, for: abbr)
 
             report("Fetching chapters…", 0.15)
-            let chaptersResp = try await api.fetchChapters(abbr: abbr)
+            let chaptersResp = try await api.fetchChapters(path: path)
             var chapters: [Chapter] = []
             for (_, chapterDTOs) in chaptersResp {
                 for dto in chapterDTOs {
@@ -72,7 +100,7 @@ final class BibleRepo: BibleRepoProtocol {
             let alreadyCached = bibleData.cachedChapterIds(for: abbr)
 
             report("Fetching verses…", 0.25)
-            try await downloadVersesForAllBooks(abbr: abbr, bookIds: bookIds, chaptersByBook: chaptersByBook, alreadyCached: alreadyCached, report: report)
+            try await downloadVersesForAllBooks(abbr: abbr, path: path, bookIds: bookIds, chaptersByBook: chaptersByBook, alreadyCached: alreadyCached, report: report)
 
             bibleData.markDownloaded(abbr: abbr)
             report("Done!", 1.0)
@@ -84,6 +112,7 @@ final class BibleRepo: BibleRepoProtocol {
 
     private func downloadVersesForAllBooks(
         abbr: String,
+        path: String,
         bookIds: [String],
         chaptersByBook: [String: [Chapter]],
         alreadyCached: Set<String>,
@@ -99,7 +128,7 @@ final class BibleRepo: BibleRepoProtocol {
                 guard let bookId = iterator.next() else { return }
                 let chapters = chaptersByBook[bookId] ?? []
                 group.addTask {
-                    await self.downloadVerses(abbr: abbr, bookId: bookId, chapters: chapters, alreadyCached: alreadyCached)
+                    await self.downloadVerses(abbr: abbr, path: path, bookId: bookId, chapters: chapters, alreadyCached: alreadyCached)
                 }
             }
 
@@ -117,10 +146,10 @@ final class BibleRepo: BibleRepoProtocol {
     /// Fetches + saves every not-yet-cached chapter for one book. Errors on
     /// an individual chapter are swallowed (matching Android) so one bad
     /// chapter doesn't take down the whole book's download.
-    private func downloadVerses(abbr: String, bookId: String, chapters: [Chapter], alreadyCached: Set<String>) async {
+    private func downloadVerses(abbr: String, path: String, bookId: String, chapters: [Chapter], alreadyCached: Set<String>) async {
         for chapter in chapters where !alreadyCached.contains(chapter.id) {
             do {
-                let content = try await api.fetchVerses(abbr: abbr, bookId: bookId, chapter: chapter.number)
+                let content = try await api.fetchVerses(path: path, bookId: bookId, chapter: chapter.number)
                 let verses = Self.extractVerses(from: content)
                 bibleData.saveVerseContent(
                     VerseChapterContent(chapterId: chapter.id, bibleAbbr: abbr, bookId: bookId, verseCount: content.verseCount, verses: verses)
@@ -178,5 +207,13 @@ final class BibleRepo: BibleRepoProtocol {
 
     func localVerses(abbr: String, chapterId: String) -> VerseChapterContent? {
         bibleData.fetchVerseContent(for: abbr, chapterId: chapterId)
+    }
+
+    func deleteBible(abbr: String) {
+        bibleData.deleteBible(abbr: abbr)
+    }
+
+    func clearBibleContent(abbr: String) {
+        bibleData.clearBibleContent(abbr: abbr)
     }
 }

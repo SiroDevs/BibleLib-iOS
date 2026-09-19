@@ -14,4 +14,6 @@ enum UiState: Equatable {
     case saved
     case loaded
     case error(String)
+    /// The first-install primary download failed part-way; `progress` is 0...1.
+    case saveFailed(message: String, progress: Double)
 }

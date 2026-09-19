@@ -10,13 +10,14 @@ import Foundation
 struct AppConstants {
     static let appTitle = "BibleLib"
     static let appCredits = "© Siro Devs"
-    static let bibleLibBaseURL = "https://biblive.vercel.app/"
+    static let bibleLibBaseURL = "https://biblive.vercel.app/v2/"
 }
 
 struct PrefConstants {
     static let isDataLoaded = "isDataLoadedKey"
     static let hasCompletedSelection = "hasCompletedSelectionKey"
     static let primaryBibleAbbr = "primaryBibleAbbrKey"
+    static let selectedBibles = "selectedBiblesKey"
     static let installDate = "installDateKey"
     static let lastAppOpenTime = "lastAppOpenTimeKey"
 }

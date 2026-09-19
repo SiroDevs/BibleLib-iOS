@@ -32,6 +32,10 @@ struct DependencyMap {
             )
         }.inObjectScope(.container)
 
+        container.register(SyncScheduler.self) { resolver in
+            SyncScheduler(bibleRepo: resolver.resolve(BibleRepoProtocol.self)!)
+        }.inObjectScope(.container)
+
         container.register(SplashViewModel.self) { resolver in
             SplashViewModel(prefsRepo: resolver.resolve(PrefsRepo.self)!)
         }
@@ -39,7 +43,8 @@ struct DependencyMap {
         container.register(SelectionViewModel.self) { resolver in
             SelectionViewModel(
                 bibleRepo: resolver.resolve(BibleRepoProtocol.self)!,
-                prefsRepo: resolver.resolve(PrefsRepo.self)!
+                prefsRepo: resolver.resolve(PrefsRepo.self)!,
+                syncScheduler: resolver.resolve(SyncScheduler.self)!
             )
         }
 

@@ -37,6 +37,7 @@ class BibleDataManager {
                 cd.languageName = bible.languageName
                 cd.scriptDirection = bible.scriptDirection
                 cd.countryName = bible.countryName
+                cd.path = bible.path
                 cd.sortOrder = Int32(bible.sortOrder)
             }
             try? context.save()
@@ -187,6 +188,45 @@ class BibleDataManager {
         request.fetchLimit = 1
         guard let cd = try? context.fetch(request).first else { return nil }
         return MapCdToEntity.mapToEntity(cd)
+    }
+
+    // MARK: - Per-Bible cleanup
+
+    /// Removes a Bible and everything downloaded for it (mirrors Android's
+    /// `BibleRepo.deleteBible`).
+    func deleteBible(abbr: String) {
+        context.performAndWait {
+            deleteContent(for: abbr)
+            if let cd = fetchBibleCd(abbr) { context.delete(cd) }
+            try? context.save()
+        }
+    }
+
+    /// Drops a Bible's books/chapters/verses and resets its download state so
+    /// it can be downloaded again from scratch (mirrors Android's
+    /// `BibleRepo.clearBibleContent`).
+    func clearBibleContent(abbr: String) {
+        context.performAndWait {
+            deleteContent(for: abbr)
+            if let cd = fetchBibleCd(abbr) {
+                cd.isDownloaded = false
+                cd.downloadProgress = 0
+                cd.downloadFailed = false
+            }
+            try? context.save()
+        }
+    }
+
+    /// Must be called from inside `context.performAndWait`.
+    private func deleteContent(for abbr: String) {
+        func deleteAll<T: NSManagedObject>(_ type: T.Type, entity: String) {
+            let request = NSFetchRequest<T>(entityName: entity)
+            request.predicate = NSPredicate(format: "bibleAbbr == %@", abbr)
+            (try? context.fetch(request))?.forEach { context.delete($0) }
+        }
+        deleteAll(CDVerse.self, entity: "CDVerse")
+        deleteAll(CDChapter.self, entity: "CDChapter")
+        deleteAll(CDBook.self, entity: "CDBook")
     }
 
     func deleteAllData() {

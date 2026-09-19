@@ -19,7 +19,8 @@ struct MapCdToEntity {
             isDownloaded: cd.isDownloaded,
             countryName: cd.countryName ?? "",
             downloadProgress: cd.downloadProgress,
-            downloadFailed: cd.downloadFailed
+            downloadFailed: cd.downloadFailed,
+            path: cd.path ?? ""
         )
     }
 

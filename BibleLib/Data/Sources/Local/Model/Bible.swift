@@ -19,4 +19,6 @@ struct Bible: Identifiable, Codable, Hashable {
     var countryName: String = ""
     var downloadProgress: Double = 0
     var downloadFailed: Bool = false
+    /// Remote folder for this Bible's content; blank falls back to the abbreviation.
+    var path: String = ""
 }

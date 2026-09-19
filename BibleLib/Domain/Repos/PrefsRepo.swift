@@ -33,6 +33,13 @@ class PrefsRepo {
         set { userDefaults.set(newValue, forKey: PrefConstants.primaryBibleAbbr) }
     }
 
+    /// Abbreviations of every Bible the user has chosen, in selection order
+    /// (the first one is the primary). Mirrors Android's `selectedBibles`.
+    var selectedBibles: [String] {
+        get { userDefaults.stringArray(forKey: PrefConstants.selectedBibles) ?? [] }
+        set { userDefaults.set(newValue, forKey: PrefConstants.selectedBibles) }
+    }
+
     var installDate: Date {
         get { userDefaults.object(forKey: PrefConstants.installDate) as? Date ?? Date() }
         set { userDefaults.set(newValue, forKey: PrefConstants.installDate) }
@@ -52,5 +59,6 @@ class PrefsRepo {
         isDataLoaded = false
         hasCompletedSelection = false
         primaryBibleAbbr = nil
+        selectedBibles = []
     }
 }

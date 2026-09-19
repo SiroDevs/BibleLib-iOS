@@ -24,6 +24,7 @@ final class DiContainer {
             { self.container.resolve(BibleLibApiServiceProtocol.self) },
             { self.container.resolve(BibleDataManager.self) },
             { self.container.resolve(BibleRepoProtocol.self) },
+            { self.container.resolve(SyncScheduler.self) },
             { self.container.resolve(SplashViewModel.self) },
             { self.container.resolve(SelectionViewModel.self) },
         ]

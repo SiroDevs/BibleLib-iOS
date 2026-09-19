@@ -10,6 +10,9 @@ import SwiftUI
 struct SplashView: View {
     @StateObject private var viewModel: SplashViewModel = DiContainer.shared.resolve(SplashViewModel.self)
     @State private var navigateToNextScreen = false
+    /// Set once the Selection screen has saved; replaces Selection with the Reader
+    /// (Android pops the selection route inclusive).
+    @State private var finishedSelectionAbbr: String?
 
     var body: some View {
         Group {
@@ -27,16 +30,21 @@ struct SplashView: View {
             }
         }
         .animation(.easeInOut, value: navigateToNextScreen)
+        .animation(.easeInOut, value: finishedSelectionAbbr)
     }
 
     @ViewBuilder
     private var destinationView: some View {
-        if viewModel.prefsRepo.hasCompletedSelection, let abbr = viewModel.prefsRepo.primaryBibleAbbr {
+        if let abbr = finishedSelectionAbbr {
+            NavigationStack {
+                ReaderView(bibleAbbr: abbr)
+            }
+        } else if viewModel.prefsRepo.hasCompletedSelection, let abbr = viewModel.prefsRepo.primaryBibleAbbr {
             NavigationStack {
                 ReaderView(bibleAbbr: abbr)
             }
         } else {
-            SelectionView()
+            SelectionView(onFinished: { finishedSelectionAbbr = $0 })
         }
     }
 }
