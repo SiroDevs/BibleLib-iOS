@@ -2,13 +2,11 @@
 //  ShimmerViews.swift
 //  BibleLib
 //
-//  Port of Android's shimmer placeholders (LoadingIndicators.kt).
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI
 
-/// Android's `shimmerBrush`: a diagonal gradient surfaceVariant → surface →
-/// surfaceVariant whose end point sweeps from 0 to `Self.travel` every 1.2s.
 private enum Shimmer {
     static let period: TimeInterval = 1.2
     static let travel: CGFloat = 400
@@ -20,7 +18,6 @@ private enum Shimmer {
 }
 
 struct ShimmerBox: View {
-    /// Current sweep offset; every box on screen shares one clock so they pulse together.
     let offset: CGFloat
     var cornerRadius: CGFloat = 8
 

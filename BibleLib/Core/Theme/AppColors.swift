@@ -2,15 +2,7 @@
 //  AppColors.swift
 //  BibleLib
 //
-//  Swift mirror of Android's `MaterialTheme.colorScheme`. Every value comes from
-//  a color set in Assets.xcassets, which is generated from Android's
-//  core/design_system/.../theme/Color.kt (LightColors / DarkColors) — change a
-//  color there, then update the matching color set.
-//
-//  Colors are looked up by asset name rather than through Xcode's generated
-//  symbols so roles like `tertiary` can't collide with SwiftUI's own
-//  `.tertiary` shape style. (Asset names carry a "1" suffix where SwiftUI
-//  already owns the bare name: primary1, secondary1, background1.)
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI

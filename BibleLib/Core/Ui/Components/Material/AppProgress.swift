@@ -2,8 +2,7 @@
 //  AppProgress.swift
 //  BibleLib
 //
-//  Determinate CircularProgressIndicator / LinearProgressIndicator look-alikes
-//  (indicator = primary, track = surfaceVariant, as used on Android).
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI

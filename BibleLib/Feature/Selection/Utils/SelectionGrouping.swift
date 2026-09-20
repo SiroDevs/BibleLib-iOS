@@ -2,10 +2,7 @@
 //  SelectionGrouping.swift
 //  BibleLib
 //
-//  Port of Android's SelectionGrouping.kt: turns the flat Bible list into the
-//  ordered rows (headers, country filter strips, Bible cards) the Selection
-//  screen renders, for each GroupingMode. Ordering rules, keys and labels are
-//  intentionally identical to Android so both apps lay out the same way.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

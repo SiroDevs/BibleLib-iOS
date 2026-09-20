@@ -2,13 +2,7 @@
 //  RetryPolicy.swift
 //  BibleLib
 //
-//  Port of Android's RetryPolicy / DownloadFailure (core/network/.../RetryPolicy.kt):
-//
-//    5xx / timeout / dropped connection -> retry with exponential backoff
-//    429                                -> wait for Retry-After, then retry
-//    404                                -> permanent, fail fast
-//    401 / 403                          -> permanent, fail fast
-//    anything else                      -> retried like a transient failure
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation
@@ -21,7 +15,6 @@ enum DownloadFailure: Error, LocalizedError {
     case unauthorized
     case unknown(underlying: Error?)
 
-    /// True for failures where retrying is pointless (gone / needs auth).
     var isPermanent: Bool {
         switch self {
         case .notFound, .unauthorized: return true
@@ -60,19 +53,16 @@ enum RetryPolicy {
             }
         }
 
-        if error is URLError { return .network(underlying: error) } // includes timeouts
+        if error is URLError { return .network(underlying: error) }
         return .unknown(underlying: error)
     }
 
-    /// Cancellation is never retried or recorded as a failure.
     static func isCancellation(_ error: Error) -> Bool {
         if error is CancellationError { return true }
         if let urlError = error as? URLError, urlError.code == .cancelled { return true }
         return false
     }
 
-    /// Runs `block`, retrying transient failures with exponential backoff. Throws the
-    /// classified `DownloadFailure` once attempts are exhausted or the failure is permanent.
     static func retrying<T>(
         maxAttempts: Int = defaultMaxAttempts,
         initialDelay: TimeInterval = defaultInitialDelay,

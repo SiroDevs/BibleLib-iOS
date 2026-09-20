@@ -2,7 +2,7 @@
 //  GroupingExtensions.swift
 //  BibleLib
 //
-//  Port of Android's GroupingExtensions.kt.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation
@@ -12,7 +12,6 @@ struct CountryRef {
     let name: String
 }
 
-/// Deliberately spelled like Android's constant so both apps show the same header.
 let unspecifiedCountryName = "Unspecific"
 
 extension BibleInfoDTO {

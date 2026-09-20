@@ -2,9 +2,7 @@
 //  AppFilterChip.swift
 //  BibleLib
 //
-//  Material 3 FilterChip look-alike: 32pt tall, 8pt corners, outlined when
-//  unselected, secondaryContainer when selected. Like Compose it reserves a
-//  48pt-tall touch target around the 32pt chip.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI
@@ -12,7 +10,6 @@ import SwiftUI
 struct AppFilterChip: View {
     let label: String
     let isSelected: Bool
-    /// Show a leading check mark while selected (Compose: `leadingIcon`).
     var showsCheckWhenSelected: Bool = false
     let action: () -> Void
 

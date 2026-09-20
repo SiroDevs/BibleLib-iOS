@@ -16,7 +16,6 @@ protocol BibleLibApiServiceProtocol {
 }
 
 enum BibleLibApiError: LocalizedError {
-    /// Non-2xx response. `status` is -1 when the response wasn't HTTP at all.
     case http(status: Int, retryAfter: TimeInterval?, path: String)
 
     var errorDescription: String? {
@@ -30,9 +29,6 @@ final class BibleLibApiService: BibleLibApiServiceProtocol {
     private let session: URLSession
     private let baseURL: URL
 
-    /// Timeouts mirror Android's OkHttp client (15s connect / 30s read) so a slow
-    /// chapter fails fast enough for RetryPolicy to kick in, and the connection
-    /// limit matches the number of books downloaded concurrently.
     static let downloadSession: URLSession = {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 30

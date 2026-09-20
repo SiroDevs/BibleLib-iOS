@@ -2,9 +2,7 @@
 //  AppTopBar.swift
 //  BibleLib
 //
-//  Port of Android's AppTopBar (Material TopAppBar): 64pt tall, `onPrimary`
-//  container, `onPrimaryContainer` title/icons, optional uppercase tagline.
-//  The container paints under the status bar.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI

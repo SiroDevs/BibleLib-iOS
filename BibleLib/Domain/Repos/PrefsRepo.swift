@@ -14,15 +14,11 @@ class PrefsRepo {
         self.userDefaults = userDefaults
     }
 
-    /// True once the Bible list (info.json) has been fetched at least once.
     var isDataLoaded: Bool {
         get { userDefaults.bool(forKey: PrefConstants.isDataLoaded) }
         set { userDefaults.set(newValue, forKey: PrefConstants.isDataLoaded) }
     }
 
-    /// True once the user has picked + downloaded at least one Bible and
-    /// chosen a primary. Mirrors Android's "selection completed" flag —
-    /// this is what Splash checks to route to Selection vs. the Reader.
     var hasCompletedSelection: Bool {
         get { userDefaults.bool(forKey: PrefConstants.hasCompletedSelection) }
         set { userDefaults.set(newValue, forKey: PrefConstants.hasCompletedSelection) }
@@ -33,14 +29,11 @@ class PrefsRepo {
         set { userDefaults.set(newValue, forKey: PrefConstants.primaryBibleAbbr) }
     }
 
-    /// Epoch millis of the last completed background Bible download (Android: `lastSyncedAt`).
     var lastSyncedAt: Int {
         get { userDefaults.integer(forKey: PrefConstants.lastSyncedAt) }
         set { userDefaults.set(newValue, forKey: PrefConstants.lastSyncedAt) }
     }
 
-    /// Abbreviations of every Bible the user has chosen, in selection order
-    /// (the first one is the primary). Mirrors Android's `selectedBibles`.
     var selectedBibles: [String] {
         get { userDefaults.stringArray(forKey: PrefConstants.selectedBibles) ?? [] }
         set { userDefaults.set(newValue, forKey: PrefConstants.selectedBibles) }

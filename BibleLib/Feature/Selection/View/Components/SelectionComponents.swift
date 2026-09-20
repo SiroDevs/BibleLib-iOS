@@ -2,7 +2,7 @@
 //  SelectionComponents.swift
 //  BibleLib
 //
-//  Ports of the composables in Android's selection/view/components/Components.kt.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI

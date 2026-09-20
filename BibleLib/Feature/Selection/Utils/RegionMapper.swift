@@ -2,8 +2,7 @@
 //  RegionMapper.swift
 //  BibleLib
 //
-//  Port of Android's RegionMapper (feature/selection/.../utils/RegionMapper.kt).
-//  Maps an ISO country code to the continent used for "Regions" grouping.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

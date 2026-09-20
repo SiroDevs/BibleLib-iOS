@@ -7,10 +7,6 @@
 
 import CoreData
 
-/// All access goes through `CoreDataManager.backgroundContext` (a private-queue
-/// context) via `performAndWait`, so it is safe to call from any thread — including
-/// the concurrent download tasks — and never touches the main queue. Bulk writes are
-/// batched per call (one fetch + one save), the equivalent of Room's `insertAll`.
 class BibleDataManager {
     private let coreDataManager: CoreDataManager
 
@@ -22,8 +18,6 @@ class BibleDataManager {
         coreDataManager.backgroundContext
     }
 
-    // MARK: - Bibles
-
     func fetchBibles() -> [Bible] {
         context.performAndWait {
             let request: NSFetchRequest<CDBible> = CDBible.fetchRequest()
@@ -32,8 +26,6 @@ class BibleDataManager {
         }
     }
 
-    /// Upserts metadata only — never touches download state, so re-fetching
-    /// the Bible list can't accidentally wipe an existing download's progress.
     func saveBibles(_ bibles: [Bible]) {
         context.performAndWait {
             for bible in bibles {
@@ -69,7 +61,6 @@ class BibleDataManager {
         }
     }
 
-    /// Keeps the last recorded progress so the UI can show "N% done before it stopped".
     func markFailed(abbr: String) {
         context.performAndWait {
             guard let cd = fetchBibleCd(abbr) else { return }
@@ -78,7 +69,6 @@ class BibleDataManager {
         }
     }
 
-    /// Must be called from inside `context.performAndWait`.
     private func fetchBibleCd(_ abbr: String) -> CDBible? {
         let request: NSFetchRequest<CDBible> = CDBible.fetchRequest()
         request.predicate = NSPredicate(format: "abbreviation == %@", abbr)
@@ -86,7 +76,6 @@ class BibleDataManager {
         return try? context.fetch(request).first
     }
 
-    /// Must be called from inside `context.performAndWait`.
     private func findOrCreateBible(abbreviation: String) -> CDBible {
         if let existing = fetchBibleCd(abbreviation) { return existing }
         let new = CDBible(context: context)
@@ -94,8 +83,6 @@ class BibleDataManager {
         new.addedAt = Date()
         return new
     }
-
-    // MARK: - Books
 
     func saveBooks(_ books: [Book], for abbr: String) {
         context.performAndWait {
@@ -134,8 +121,6 @@ class BibleDataManager {
         }
     }
 
-    // MARK: - Chapters
-
     func saveChapters(_ chapters: [Chapter], for abbr: String) {
         context.performAndWait {
             let request: NSFetchRequest<CDChapter> = CDChapter.fetchRequest()
@@ -173,11 +158,6 @@ class BibleDataManager {
         }
     }
 
-    // MARK: - Verses
-
-    /// Chapter ids already cached for this Bible, so a resumed download can
-    /// skip chapters it already has (mirrors Android's getCachedChapterIds).
-    /// Reads only the id column so it doesn't load every chapter's verse JSON.
     func cachedChapterIds(for abbr: String) -> Set<String> {
         context.performAndWait {
             let request = NSFetchRequest<NSDictionary>(entityName: "CDVerse")
@@ -193,7 +173,6 @@ class BibleDataManager {
         saveVerseContents([content])
     }
 
-    /// Saves many chapters of one Bible in a single fetch + save (Android: `verseDao.insertAll`).
     func saveVerseContents(_ contents: [VerseChapterContent]) {
         guard let abbr = contents.first?.bibleAbbr else { return }
 
@@ -219,7 +198,7 @@ class BibleDataManager {
                 cd.cachedAt = Date()
             }
             try? context.save()
-            context.reset() // release the verse JSON we just wrote
+            context.reset()
         }
     }
 
@@ -233,10 +212,6 @@ class BibleDataManager {
         }
     }
 
-    // MARK: - Per-Bible cleanup
-
-    /// Removes a Bible and everything downloaded for it (mirrors Android's
-    /// `BibleRepo.deleteBible`).
     func deleteBible(abbr: String) {
         context.performAndWait {
             batchDeleteContent(for: abbr)
@@ -246,9 +221,6 @@ class BibleDataManager {
         }
     }
 
-    /// Drops a Bible's books/chapters/verses and resets its download state so
-    /// it can be downloaded again from scratch (mirrors Android's
-    /// `BibleRepo.clearBibleContent`).
     func clearBibleContent(abbr: String) {
         context.performAndWait {
             batchDeleteContent(for: abbr)
@@ -262,7 +234,6 @@ class BibleDataManager {
         }
     }
 
-    /// Must be called from inside `context.performAndWait`.
     private func batchDeleteContent(for abbr: String) {
         for entity in ["CDVerse", "CDChapter", "CDBook"] {
             let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: entity)

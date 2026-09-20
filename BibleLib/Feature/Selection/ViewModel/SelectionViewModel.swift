@@ -2,14 +2,7 @@
 //  SelectionViewModel.swift
 //  BibleLib
 //
-//  Port of Android's SelectionViewModel plus its FirstTimeSelectionController /
-//  ReturningSelectionController / persistSelectionBookkeeping:
-//
-//  - First install: the primary Bible (the first one selected, in list order)
-//    downloads in the foreground with visible progress; the rest are queued in
-//    the background once it succeeds.
-//  - Returning user re-selecting: everything is queued in the background and the
-//    screen closes immediately.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation
@@ -25,7 +18,6 @@ final class SelectionViewModel: ObservableObject {
     @Published var downloadProgress: Double = 0
     @Published var downloadStep = "Preparing ..."
 
-    /// The Bible the Reader should open once the selection has been saved.
     private(set) var savedPrimaryAbbr: String?
 
     private let bibleRepo: BibleRepoProtocol
@@ -46,10 +38,6 @@ final class SelectionViewModel: ObservableObject {
 
     var canProceed: Bool { selectedCount > 0 }
 
-    // MARK: - Loading
-
-    /// Also the Refresh action: reloads the list and drops any unsaved picks,
-    /// restoring the previously saved selection (as Android does).
     func fetchBibles() {
         uiState = .loading(nil)
 
@@ -90,8 +78,6 @@ final class SelectionViewModel: ObservableObject {
     private func currentSelection() -> [BibleInfoDTO] {
         bibles.filter(\.isSelected).map(\.data)
     }
-
-    // MARK: - First-install flow
 
     func saveSelectionAndDownload() {
         let selected = currentSelection()
@@ -180,13 +166,10 @@ final class SelectionViewModel: ObservableObject {
             }
         }
 
-        // Only now is the app usable: Splash routes to the Reader on this flag.
         prefsRepo.hasCompletedSelection = true
 
         syncScheduler.scheduleDownloads(selected.dropFirst().map(\.abbreviation))
     }
-
-    // MARK: - Returning-user reselection
 
     func saveSelectionInBackground() {
         let selected = currentSelection()
@@ -198,11 +181,6 @@ final class SelectionViewModel: ObservableObject {
         uiState = .saved
     }
 
-    // MARK: - Bookkeeping
-
-    /// Mirrors Android's `persistSelectionBookkeeping`: drops Bibles that are no
-    /// longer selected, records the new selection and primary, and upserts the
-    /// selected Bibles' metadata.
     private func persistSelectionBookkeeping(_ selected: [BibleInfoDTO]) {
         guard let primary = selected.first else { return }
         let newAbbrs = Set(selected.map(\.abbreviation))

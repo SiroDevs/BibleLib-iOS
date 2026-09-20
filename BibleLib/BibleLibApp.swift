@@ -12,9 +12,6 @@ struct BibleLibApp: App {
     @StateObject private var themeManager = ThemeManager()
 
     init() {
-        // Resolving the container at launch also runs DiContainer's
-        // dependency validation, so a missing registration crashes
-        // immediately at startup instead of surfacing later.
         _ = DiContainer.shared
     }
 

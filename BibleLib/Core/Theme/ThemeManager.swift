@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-/// Case order and display names match Android's `ThemeMode` / `appThemeName`,
-/// since the theme dialog lists `allCases` in order.
 enum AppThemeMode: String, CaseIterable, Identifiable {
     case system, light, dark
     var id: String { rawValue }

@@ -2,8 +2,7 @@
 //  BibleListItem.swift
 //  BibleLib
 //
-//  Port of Android's BibleListItem card: 10pt corners, 45pt abbreviation badge,
-//  name / description / "LANGUAGE BIBLE" column, check mark when selected.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI

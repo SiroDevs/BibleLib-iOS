@@ -15,7 +15,6 @@ struct BibleInfoDTO: Decodable {
     let language: BibleLangDTO
     let countries: [BibleCountryDTO]
     let info: String
-    /// Folder the Bible's books/chapters/verses live under. Blank means "use the abbreviation".
     let path: String
 
     enum CodingKeys: String, CodingKey {
@@ -34,7 +33,6 @@ struct BibleInfoDTO: Decodable {
         path = try c.decodeIfPresent(String.self, forKey: .path) ?? ""
     }
 
-    /// Android's `primaryCountryName()`.
     func primaryCountryName() -> String {
         let first = countries.first?.name ?? ""
         return first.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Other" : first

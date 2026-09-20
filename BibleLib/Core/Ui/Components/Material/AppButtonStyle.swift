@@ -2,8 +2,7 @@
 //  AppButtonStyle.swift
 //  BibleLib
 //
-//  Material 3 Button / OutlinedButton / TextButton look-alikes so screens that
-//  mirror Android use the same shapes, heights and colors.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI

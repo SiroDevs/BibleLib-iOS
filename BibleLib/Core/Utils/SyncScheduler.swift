@@ -2,18 +2,7 @@
 //  SyncScheduler.swift
 //  BibleLib
 //
-//  iOS counterpart of Android's SyncScheduler + SyncWorker. Every Bible is its own
-//  independent unit of work, so the primary can finish first and the rest keep going
-//  after the Selection screen is gone. Per Bible it behaves like the worker:
-//
-//    - no network            -> wait, then try again
-//    - 404 / 401 / 403       -> permanent: mark the download failed, don't retry
-//    - anything else         -> retry up to 3 more times with exponential backoff
-//                               (30s, 60s, 120s — WorkManager's default policy)
-//    - retries exhausted     -> mark the download failed
-//
-//  Unlike WorkManager, iOS won't run these once the app is suspended; they resume
-//  the next time the app opens (see `resumeIncompleteDownloads`).
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

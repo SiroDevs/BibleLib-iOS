@@ -9,7 +9,7 @@ import Foundation
 
 struct ChapterContentDTO: Decodable {
     let id: String
-    let bibleId: String
+    let bibleId: String?
     let number: String
     let bookId: String
     let reference: String
@@ -17,8 +17,6 @@ struct ChapterContentDTO: Decodable {
     let content: [ContentItemDTO?]
 }
 
-/// One node in the chapter's structured content tree: verse markers, text
-/// runs, headings, and nested items are all represented the same way.
 struct ContentItemDTO: Decodable {
     let name: String?
     let type: String
@@ -61,7 +59,6 @@ struct LenientStringMap: Decodable {
             } else if let b = try? container.decode(Bool.self, forKey: key) {
                 result[key.stringValue] = String(b)
             }
-            // null / array / object values are skipped, matching Android.
         }
         value = result
     }

@@ -2,7 +2,7 @@
 //  GroupingMode.swift
 //  BibleLib
 //
-//  Port of Android's GroupingMode (feature/selection/.../utils/GroupingMode.kt).
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import Foundation

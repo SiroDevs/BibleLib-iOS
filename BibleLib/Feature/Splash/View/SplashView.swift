@@ -10,8 +10,6 @@ import SwiftUI
 struct SplashView: View {
     @StateObject private var viewModel: SplashViewModel = DiContainer.shared.resolve(SplashViewModel.self)
     @State private var navigateToNextScreen = false
-    /// Set once the Selection screen has saved; replaces Selection with the Reader
-    /// (Android pops the selection route inclusive).
     @State private var finishedSelectionAbbr: String?
 
     var body: some View {

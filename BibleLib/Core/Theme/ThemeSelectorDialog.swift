@@ -2,10 +2,7 @@
 //  ThemeSelectorDialog.swift
 //  BibleLib
 //
-//  Port of Android's ThemeSelectorDialog (a Material 3 AlertDialog with a radio
-//  list). Present it as an overlay above the screen and drive it with a Bool:
-//
-//      .overlay { if showThemeDialog { ThemeSelectorDialog(...) } }
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI

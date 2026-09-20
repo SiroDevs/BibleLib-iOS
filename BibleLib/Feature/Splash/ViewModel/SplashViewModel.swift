@@ -24,7 +24,6 @@ final class SplashViewModel: ObservableObject {
         Task {
             _ = await netUtils.checkNetworkAvailability()
             prefsRepo.updateAppOpenTime()
-            // Pick up any Bible downloads that were interrupted when the app last closed.
             syncScheduler.resumeIncompleteDownloads()
             await MainActor.run {
                 isInitialized = true

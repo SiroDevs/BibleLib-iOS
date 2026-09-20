@@ -2,9 +2,7 @@
 //  RetryErrorState.swift
 //  BibleLib
 //
-//  Port of the compact ErrorState in Android's LoadingIndicators.kt (warning
-//  icon, message, outlined Retry). The bolder "Oops, something went wrong!"
-//  variant from ErrorState.kt is `ErrorState` in this folder.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI

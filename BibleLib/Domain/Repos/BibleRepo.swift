@@ -24,7 +24,6 @@ final class BibleRepo: BibleRepoProtocol {
     private let api: BibleLibApiServiceProtocol
     private let bibleData: BibleDataManager
 
-    /// How many books are downloaded concurrently (Android: MAX_CONCURRENT_BOOK_BATCHES).
     private let maxConcurrentBooks = 20
 
     init(api: BibleLibApiServiceProtocol, bibleData: BibleDataManager) {
@@ -32,9 +31,6 @@ final class BibleRepo: BibleRepoProtocol {
         self.bibleData = bibleData
     }
 
-    /// Mirrors Android: read the group list, fetch every group's Bibles
-    /// concurrently (a failing group is skipped), keep group order. Every call
-    /// goes through RetryPolicy.
     func fetchAvailableBibles() async throws -> [BibleInfoDTO] {
         let api = self.api
         let groups = try await RetryPolicy.retrying { try await api.fetchGroups() }
@@ -118,8 +114,6 @@ final class BibleRepo: BibleRepoProtocol {
         }
     }
 
-    /// Books download concurrently (bounded by `maxConcurrentBooks`); progress moves
-    /// as each book finishes, from 0.25 to 0.95 — same as Android.
     private func downloadVersesForAllBooks(
         abbr: String,
         path: String,
@@ -159,9 +153,6 @@ final class BibleRepo: BibleRepoProtocol {
         }
     }
 
-    /// Fetches every not-yet-cached chapter of one book, then saves them in a single
-    /// batch (Android: `verseDao.insertAll`). A book that fails is logged and skipped
-    /// so the others still finish; only cancellation propagates.
     private func downloadBook(abbr: String, path: String, bookId: String, chapters: [Chapter], alreadyCached: Set<String>) async throws {
         do {
             let pending = chapters.filter { !alreadyCached.contains($0.id) }
@@ -177,8 +168,6 @@ final class BibleRepo: BibleRepoProtocol {
         }
     }
 
-    /// Chapters are fetched one after another within a book, each with its own
-    /// retry/backoff; a chapter that still fails is skipped (matching Android).
     private func fetchVersesForBook(abbr: String, path: String, bookId: String, chapters: [Chapter]) async throws -> [VerseChapterContent] {
         let api = self.api
         var results: [VerseChapterContent] = []
@@ -201,10 +190,6 @@ final class BibleRepo: BibleRepoProtocol {
         return results
     }
 
-    /// Walks the chapter's recursive content tree, collecting text runs
-    /// under each verse marker into flat, displayable verses. Mirrors
-    /// Android's BibleRepo.extractVerses exactly, including appending text
-    /// to the same verse if the source splits one verse across nodes.
     static func extractVerses(from content: ChapterContentDTO) -> [VerseDisplay] {
         var verses: [VerseDisplay] = []
         var currentVerseNumber = 0

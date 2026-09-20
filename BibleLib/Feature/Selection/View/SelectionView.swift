@@ -2,10 +2,7 @@
 //  SelectionView.swift
 //  BibleLib
 //
-//  Port of Android's SelectionScreen / SelectionContent: top bar with selection
-//  counter, refresh + theme actions, grouping chips, a two-column grid of Bible
-//  cards under collapsible group headers, the Continue bar, and the first-install
-//  download progress / failure states.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI
@@ -15,10 +12,7 @@ struct SelectionView: View {
     @EnvironmentObject private var themeManager: ThemeManager
     @Environment(\.dismiss) private var dismiss
 
-    /// Called with the primary Bible's abbreviation once the selection is saved
-    /// (Android: navigate to the reader and pop the selection route).
     let onFinished: (String) -> Void
-    /// Called when a returning user backs out with the close button.
     let onCancel: (() -> Void)?
 
     init(onFinished: @escaping (String) -> Void = { _ in }, onCancel: (() -> Void)? = nil) {
@@ -85,8 +79,6 @@ struct SelectionView: View {
         }
     }
 
-    // MARK: - Top bar
-
     @ViewBuilder
     private var topBar: some View {
         if showChrome {
@@ -105,8 +97,6 @@ struct SelectionView: View {
             AppTopBar(title: "BibleLib: Multi-Bible Reader")
         }
     }
-
-    // MARK: - Content
 
     @ViewBuilder
     private var content: some View {
@@ -138,11 +128,6 @@ struct SelectionView: View {
         }
     }
 
-    // MARK: - Grid
-
-    /// One rendered line of the grid. Android uses a 2-column LazyVerticalGrid
-    /// where headers, filter strips and "solo" cards span both columns; the same
-    /// rule is applied here by packing consecutive normal cards two per line.
     private enum GridLine: Identifiable {
         case header(GridEntry, key: String, title: String, total: Int)
         case filter(GridEntry, continentKey: String, options: [FilterOption], selected: String)
@@ -255,8 +240,6 @@ struct SelectionView: View {
             .padding(2)
         }
     }
-
-    // MARK: - Cancel FAB (returning users only)
 
     private var cancelButton: some View {
         Button {

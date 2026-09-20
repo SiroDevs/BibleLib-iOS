@@ -2,9 +2,7 @@
 //  AppTextStyle.swift
 //  BibleLib
 //
-//  The slice of Material 3's type scale the Android app uses (sizes, weights and
-//  letter-spacing from M3 defaults plus Typography.kt's overrides), so shared
-//  screens line up point-for-point with their Android counterparts.
+//  Created by @sirodevs on 12/09/2026.
 //
 
 import SwiftUI
