@@ -11,6 +11,7 @@ struct SplashView: View {
     @StateObject private var viewModel: SplashViewModel = DiContainer.shared.resolve(SplashViewModel.self)
     @State private var navigateToNextScreen = false
     @State private var finishedSelectionAbbr: String?
+    @State private var appResetTick = 0
 
     var body: some View {
         Group {
@@ -29,18 +30,22 @@ struct SplashView: View {
         }
         .animation(.easeInOut, value: navigateToNextScreen)
         .animation(.easeInOut, value: finishedSelectionAbbr)
+        .onReceive(NotificationCenter.default.publisher(for: .appDataDidReset)) { _ in
+            finishedSelectionAbbr = nil
+            appResetTick += 1
+        }
+    }
+
+    /// True once Bible selection has finished (this launch or an earlier one).
+    private var showsReader: Bool {
+        _ = appResetTick // re-evaluate after "Clear All Data"
+        return finishedSelectionAbbr != nil || viewModel.prefsRepo.hasCompletedSelection
     }
 
     @ViewBuilder
     private var destinationView: some View {
-        if let abbr = finishedSelectionAbbr {
-            NavigationStack {
-                ReaderView(bibleAbbr: abbr)
-            }
-        } else if viewModel.prefsRepo.hasCompletedSelection, let abbr = viewModel.prefsRepo.primaryBibleAbbr {
-            NavigationStack {
-                ReaderView(bibleAbbr: abbr)
-            }
+        if showsReader {
+            MainNavigationView()
         } else {
             SelectionView(onFinished: { finishedSelectionAbbr = $0 })
         }

@@ -2,7 +2,7 @@
 //  SelectionGrouping.swift
 //  BibleLib
 //
-//  Created by @sirodevs on 12/09/2026.
+//  Created by @sirodevs on 13/09/2026.
 //
 
 import Foundation
@@ -19,7 +19,6 @@ enum GridEntry: Identifiable {
     case countryFilterStrip(key: String, continentKey: String, options: [FilterOption], selected: String)
     case item(key: String, bible: Selectable<BibleInfoDTO>, soloInGroup: Bool)
 
-    /// Same stable keys Android gives its LazyGrid items.
     var id: String {
         switch self {
         case .header(let key, _, _): return "header_\(key)"
@@ -40,7 +39,6 @@ private let regionPriorityOrder = [
     RegionMapper.southAmerica,
     RegionMapper.oceania,
     RegionMapper.antarctica,
-    // Unspecified is handled separately so it always sorts last.
 ]
 
 private func regionPriority(_ region: String) -> Int {
@@ -83,9 +81,6 @@ func buildGridEntries(
     }
 }
 
-// MARK: - Helpers mirroring Kotlin collection semantics
-
-/// Kotlin's `groupBy` / `LinkedHashMap`: keys keep first-insertion order.
 private struct OrderedGroups<Element> {
     private(set) var keys: [String] = []
     private var storage: [String: [Element]] = [:]
@@ -107,13 +102,10 @@ private struct OrderedGroups<Element> {
     }
 }
 
-/// Kotlin's `String.compareTo` orders by UTF-16 code unit.
 private func kotlinLess(_ a: String, _ b: String) -> Bool {
     a.utf16.lexicographicallyPrecedes(b.utf16)
 }
 
-/// Kotlin's `sortedWith` is stable; Swift's `sorted` doesn't promise that, so
-/// ties fall back to the original position.
 private func stableSorted<T>(_ array: [T], _ isOrderedBefore: (T, T) -> Bool) -> [T] {
     array.enumerated()
         .sorted { lhs, rhs in
@@ -123,8 +115,6 @@ private func stableSorted<T>(_ array: [T], _ isOrderedBefore: (T, T) -> Bool) ->
         }
         .map { $0.element }
 }
-
-// MARK: - Languages
 
 private func languagePriority(_ language: String) -> Int {
     if language.caseInsensitiveCompare("Unspecified") == .orderedSame { return Int.max }
@@ -169,8 +159,6 @@ private func buildLanguageEntries(
     }
     return result
 }
-
-// MARK: - Countries
 
 private func groupByCountry(
     _ bibles: [Selectable<BibleInfoDTO>]
@@ -222,8 +210,6 @@ private func buildCountryEntries(
     }
     return result
 }
-
-// MARK: - Regions
 
 private final class RegionBucket {
     var items: [Selectable<BibleInfoDTO>] = []

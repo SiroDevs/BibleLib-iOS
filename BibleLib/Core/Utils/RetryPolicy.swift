@@ -2,7 +2,7 @@
 //  RetryPolicy.swift
 //  BibleLib
 //
-//  Created by @sirodevs on 12/09/2026.
+//  Created by @sirodevs on 15/09/2026.
 //
 
 import Foundation

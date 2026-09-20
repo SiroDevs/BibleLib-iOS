@@ -18,6 +18,8 @@ protocol BibleRepoProtocol {
     func deleteBible(abbr: String)
     func clearBibleContent(abbr: String)
     func markDownloadFailed(abbr: String)
+    func searchVerses(abbr: String, query: String) -> [VerseDisplay]
+    func deleteAllData()
 }
 
 final class BibleRepo: BibleRepoProtocol {
@@ -245,5 +247,13 @@ final class BibleRepo: BibleRepoProtocol {
 
     func markDownloadFailed(abbr: String) {
         bibleData.markFailed(abbr: abbr)
+    }
+
+    func searchVerses(abbr: String, query: String) -> [VerseDisplay] {
+        bibleData.searchVerses(abbr: abbr, query: query)
+    }
+
+    func deleteAllData() {
+        bibleData.deleteAllData()
     }
 }

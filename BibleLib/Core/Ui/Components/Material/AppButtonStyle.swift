@@ -2,7 +2,7 @@
 //  AppButtonStyle.swift
 //  BibleLib
 //
-//  Created by @sirodevs on 12/09/2026.
+//  Created by @sirodevs on 15/09/2026.
 //
 
 import SwiftUI
@@ -15,7 +15,6 @@ enum AppButtonKind {
 
 struct AppButtonStyle: ButtonStyle {
     var kind: AppButtonKind = .filled
-    /// nil = fully rounded (Material's default button shape).
     var cornerRadius: CGFloat? = nil
 
     func makeBody(configuration: Configuration) -> some View {

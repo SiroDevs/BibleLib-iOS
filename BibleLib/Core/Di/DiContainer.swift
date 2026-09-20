@@ -27,6 +27,8 @@ final class DiContainer {
             { self.container.resolve(SyncScheduler.self) },
             { self.container.resolve(SplashViewModel.self) },
             { self.container.resolve(SelectionViewModel.self) },
+            { self.container.resolve(ReaderViewModel.self) },
+            { self.container.resolve(SettingsViewModel.self) },
         ]
 
         for resolve in dependencies {

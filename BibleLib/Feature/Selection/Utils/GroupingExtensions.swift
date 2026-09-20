@@ -2,7 +2,7 @@
 //  GroupingExtensions.swift
 //  BibleLib
 //
-//  Created by @sirodevs on 12/09/2026.
+//  Created by @sirodevs on 13/09/2026.
 //
 
 import Foundation

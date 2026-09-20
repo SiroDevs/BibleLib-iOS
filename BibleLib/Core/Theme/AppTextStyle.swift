@@ -2,7 +2,7 @@
 //  AppTextStyle.swift
 //  BibleLib
 //
-//  Created by @sirodevs on 12/09/2026.
+//  Created by @sirodevs on 13/09/2026.
 //
 
 import SwiftUI
@@ -58,8 +58,6 @@ enum AppTextStyle {
 }
 
 extension View {
-    /// Applies a Material text style. Pass `weight` to override the style's
-    /// default (Compose's `fontWeight = ...`).
     func textStyle(_ style: AppTextStyle, weight: Font.Weight? = nil) -> some View {
         self
             .font(.system(size: style.size, weight: weight ?? style.weight))

@@ -39,6 +39,69 @@ class PrefsRepo {
         set { userDefaults.set(newValue, forKey: PrefConstants.selectedBibles) }
     }
 
+    // MARK: - Reader position (Android: lastBible… lastVerseId)
+
+    var lastBible: String {
+        get { userDefaults.string(forKey: PrefConstants.lastBible) ?? "" }
+        set { userDefaults.set(newValue, forKey: PrefConstants.lastBible) }
+    }
+
+    var lastBibleAbbr: String {
+        get { userDefaults.string(forKey: PrefConstants.lastBibleAbbr) ?? "" }
+        set { userDefaults.set(newValue, forKey: PrefConstants.lastBibleAbbr) }
+    }
+
+    var lastBookId: String {
+        get { userDefaults.string(forKey: PrefConstants.lastBookId) ?? "" }
+        set { userDefaults.set(newValue, forKey: PrefConstants.lastBookId) }
+    }
+
+    var lastChapterId: String {
+        get { userDefaults.string(forKey: PrefConstants.lastChapterId) ?? "" }
+        set { userDefaults.set(newValue, forKey: PrefConstants.lastChapterId) }
+    }
+
+    var lastVerseId: String {
+        get { userDefaults.string(forKey: PrefConstants.lastVerseId) ?? "" }
+        set { userDefaults.set(newValue, forKey: PrefConstants.lastVerseId) }
+    }
+
+    // MARK: - Reading preferences
+
+    var readerFontFamily: String {
+        get { userDefaults.string(forKey: PrefConstants.readerFontFamily) ?? "default" }
+        set { userDefaults.set(newValue, forKey: PrefConstants.readerFontFamily) }
+    }
+
+    var readerBackground: String {
+        get { userDefaults.string(forKey: PrefConstants.readerBackground) ?? "default" }
+        set { userDefaults.set(newValue, forKey: PrefConstants.readerBackground) }
+    }
+
+    var fontSize: Double {
+        get {
+            let stored = userDefaults.double(forKey: PrefConstants.fontSize)
+            return stored == 0 ? ReaderFontSize.standard : stored
+        }
+        set { userDefaults.set(newValue, forKey: PrefConstants.fontSize) }
+    }
+
+    var multiBibleReaderEnabled: Bool {
+        get { userDefaults.object(forKey: PrefConstants.multiBibleEnabled) as? Bool ?? true }
+        set { userDefaults.set(newValue, forKey: PrefConstants.multiBibleEnabled) }
+    }
+
+    /// Secondary Bibles shown under each verse, in display order.
+    var secondaryBibles: [String] {
+        get { userDefaults.stringArray(forKey: PrefConstants.secondaryBibles) ?? [] }
+        set { userDefaults.set(newValue, forKey: PrefConstants.secondaryBibles) }
+    }
+
+    var hasSeenBiblesManagementTip: Bool {
+        get { userDefaults.bool(forKey: PrefConstants.hasSeenBiblesManagementTip) }
+        set { userDefaults.set(newValue, forKey: PrefConstants.hasSeenBiblesManagementTip) }
+    }
+
     var installDate: Date {
         get { userDefaults.object(forKey: PrefConstants.installDate) as? Date ?? Date() }
         set { userDefaults.set(newValue, forKey: PrefConstants.installDate) }
@@ -59,5 +122,15 @@ class PrefsRepo {
         hasCompletedSelection = false
         primaryBibleAbbr = nil
         selectedBibles = []
+        lastBible = ""
+        lastBibleAbbr = ""
+        lastBookId = ""
+        lastChapterId = ""
+        lastVerseId = ""
+        secondaryBibles = []
+        readerFontFamily = "default"
+        readerBackground = "default"
+        fontSize = ReaderFontSize.standard
+        multiBibleReaderEnabled = true
     }
 }

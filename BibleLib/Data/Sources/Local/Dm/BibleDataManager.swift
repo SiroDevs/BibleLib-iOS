@@ -212,6 +212,21 @@ class BibleDataManager {
         }
     }
 
+    /// Full-text search over one Bible's downloaded chapters. The stored JSON is
+    /// pre-filtered in SQLite, then each verse is checked (Android: `searchInBible`).
+    func searchVerses(abbr: String, query: String) -> [VerseDisplay] {
+        context.performAndWait {
+            let request: NSFetchRequest<CDVerse> = CDVerse.fetchRequest()
+            request.predicate = NSPredicate(format: "bibleAbbr == %@ AND contentJson CONTAINS[cd] %@", abbr, query)
+            let rows = (try? context.fetch(request)) ?? []
+            let chapters = rows.map(MapCdToEntity.mapToEntity(_:))
+            context.reset()
+            return chapters.flatMap { chapter in
+                chapter.verses.filter { $0.text.localizedCaseInsensitiveContains(query) }
+            }
+        }
+    }
+
     func deleteBible(abbr: String) {
         context.performAndWait {
             batchDeleteContent(for: abbr)

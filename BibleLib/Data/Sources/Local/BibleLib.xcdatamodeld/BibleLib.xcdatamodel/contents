@@ -37,4 +37,60 @@
         <attribute name="contentJson" optional="YES" attributeType="String"/>
         <attribute name="verseCount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
+    <entity name="CDBookmark" representedClassName="CDBookmark" syncable="YES" codeGenerationType="class">
+        <attribute name="bibleAbbr" optional="YES" attributeType="String"/>
+        <attribute name="bookId" optional="YES" attributeType="String"/>
+        <attribute name="chapterId" optional="YES" attributeType="String"/>
+        <attribute name="colorHex" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="verseId" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CDNote" representedClassName="CDNote" syncable="YES" codeGenerationType="class">
+        <attribute name="bibleAbbr" optional="YES" attributeType="String"/>
+        <attribute name="bookId" optional="YES" attributeType="String"/>
+        <attribute name="chapterId" optional="YES" attributeType="String"/>
+        <attribute name="noteText" optional="YES" attributeType="String"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="verseId" optional="YES" attributeType="String"/>
+        <attribute name="verseText" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CDHistory" representedClassName="CDHistory" syncable="YES" codeGenerationType="class">
+        <attribute name="bibleAbbr" optional="YES" attributeType="String"/>
+        <attribute name="bibleName" optional="YES" attributeType="String"/>
+        <attribute name="bookId" optional="YES" attributeType="String"/>
+        <attribute name="bookName" optional="YES" attributeType="String"/>
+        <attribute name="chapterId" optional="YES" attributeType="String"/>
+        <attribute name="chapterRef" optional="YES" attributeType="String"/>
+        <attribute name="dayKey" optional="YES" attributeType="String"/>
+        <attribute name="entryId" optional="YES" attributeType="String"/>
+        <attribute name="readAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="verseNumber" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="CDSearch" representedClassName="CDSearch" syncable="YES" codeGenerationType="class">
+        <attribute name="qry" optional="YES" attributeType="String"/>
+        <attribute name="queriedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="searchId" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CDScriptureList" representedClassName="CDScriptureList" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="listId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CDScriptureItem" representedClassName="CDScriptureItem" syncable="YES" codeGenerationType="class">
+        <attribute name="addedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="bibleAbbr" optional="YES" attributeType="String"/>
+        <attribute name="bibleName" optional="YES" attributeType="String"/>
+        <attribute name="bookAbbr" optional="YES" attributeType="String"/>
+        <attribute name="bookId" optional="YES" attributeType="String"/>
+        <attribute name="bookName" optional="YES" attributeType="String"/>
+        <attribute name="chapterId" optional="YES" attributeType="String"/>
+        <attribute name="chapterNumber" optional="YES" attributeType="String"/>
+        <attribute name="itemId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="listId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="reference" optional="YES" attributeType="String"/>
+        <attribute name="sortOrder" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="verseId" optional="YES" attributeType="String"/>
+        <attribute name="verseNumber" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
 </model>
