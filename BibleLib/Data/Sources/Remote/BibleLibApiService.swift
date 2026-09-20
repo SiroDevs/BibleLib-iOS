@@ -16,11 +16,12 @@ protocol BibleLibApiServiceProtocol {
 }
 
 enum BibleLibApiError: LocalizedError {
-    case requestFailed(String)
+    /// Non-2xx response. `status` is -1 when the response wasn't HTTP at all.
+    case http(status: Int, retryAfter: TimeInterval?, path: String)
 
     var errorDescription: String? {
         switch self {
-        case .requestFailed(let path): return "Failed to fetch \(path)"
+        case .http(let status, _, let path): return "Failed to fetch \(path) (HTTP \(status))"
         }
     }
 }
@@ -29,7 +30,17 @@ final class BibleLibApiService: BibleLibApiServiceProtocol {
     private let session: URLSession
     private let baseURL: URL
 
-    init(session: URLSession = .shared, baseURL: URL = URL(string: AppConstants.bibleLibBaseURL)!) {
+    /// Timeouts mirror Android's OkHttp client (15s connect / 30s read) so a slow
+    /// chapter fails fast enough for RetryPolicy to kick in, and the connection
+    /// limit matches the number of books downloaded concurrently.
+    static let downloadSession: URLSession = {
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 30
+        config.httpMaximumConnectionsPerHost = 20
+        return URLSession(configuration: config)
+    }()
+
+    init(session: URLSession = BibleLibApiService.downloadSession, baseURL: URL = URL(string: AppConstants.bibleLibBaseURL)!) {
         self.session = session
         self.baseURL = baseURL
     }
@@ -57,8 +68,12 @@ final class BibleLibApiService: BibleLibApiServiceProtocol {
     private func get<T: Decodable>(_ type: T.Type, path: String) async throws -> T {
         let url = baseURL.appendingPathComponent(path)
         let (data, response) = try await session.data(from: url)
-        guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
-            throw BibleLibApiError.requestFailed(path)
+        guard let http = response as? HTTPURLResponse else {
+            throw BibleLibApiError.http(status: -1, retryAfter: nil, path: path)
+        }
+        guard (200...299).contains(http.statusCode) else {
+            let retryAfter = http.value(forHTTPHeaderField: "Retry-After").flatMap { TimeInterval($0) }
+            throw BibleLibApiError.http(status: http.statusCode, retryAfter: retryAfter, path: path)
         }
         return try JSONDecoder().decode(T.self, from: data)
     }

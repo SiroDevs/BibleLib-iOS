@@ -18,6 +18,7 @@ struct PrefConstants {
     static let hasCompletedSelection = "hasCompletedSelectionKey"
     static let primaryBibleAbbr = "primaryBibleAbbrKey"
     static let selectedBibles = "selectedBiblesKey"
+    static let lastSyncedAt = "lastSyncedAtKey"
     static let installDate = "installDateKey"
     static let lastAppOpenTime = "lastAppOpenTimeKey"
 }

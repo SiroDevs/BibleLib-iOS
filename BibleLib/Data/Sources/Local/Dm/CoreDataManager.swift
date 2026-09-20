@@ -22,7 +22,19 @@ class CoreDataManager {
                 print("📦 Core Data SQLite DB path:\n\(dbPath)")
             }
         }
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         return container
+    }()
+
+    /// One private-queue context used for all Bible data (metadata, progress and
+    /// downloaded content). Downloads write hundreds of chapters, so this keeps
+    /// that work — and the saves — entirely off the main thread; every access goes
+    /// through `perform`/`performAndWait`, which makes it safe from any thread.
+    lazy var backgroundContext: NSManagedObjectContext = {
+        let context = persistentContainer.newBackgroundContext()
+        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        return context
     }()
 
     var viewContext: NSManagedObjectContext {

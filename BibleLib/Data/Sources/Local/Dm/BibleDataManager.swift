@@ -7,6 +7,10 @@
 
 import CoreData
 
+/// All access goes through `CoreDataManager.backgroundContext` (a private-queue
+/// context) via `performAndWait`, so it is safe to call from any thread — including
+/// the concurrent download tasks — and never touches the main queue. Bulk writes are
+/// batched per call (one fetch + one save), the equivalent of Room's `insertAll`.
 class BibleDataManager {
     private let coreDataManager: CoreDataManager
 
@@ -15,19 +19,21 @@ class BibleDataManager {
     }
 
     private var context: NSManagedObjectContext {
-        coreDataManager.viewContext
+        coreDataManager.backgroundContext
     }
 
     // MARK: - Bibles
 
     func fetchBibles() -> [Bible] {
-        let request: NSFetchRequest<CDBible> = CDBible.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-        return (try? context.fetch(request))?.map(MapCdToEntity.mapToEntity(_:)) ?? []
+        context.performAndWait {
+            let request: NSFetchRequest<CDBible> = CDBible.fetchRequest()
+            request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+            return (try? context.fetch(request))?.map(MapCdToEntity.mapToEntity(_:)) ?? []
+        }
     }
 
     /// Upserts metadata only — never touches download state, so re-fetching
-    /// info.json can't accidentally wipe an existing download's progress.
+    /// the Bible list can't accidentally wipe an existing download's progress.
     func saveBibles(_ bibles: [Bible]) {
         context.performAndWait {
             for bible in bibles {
@@ -63,6 +69,7 @@ class BibleDataManager {
         }
     }
 
+    /// Keeps the last recorded progress so the UI can show "N% done before it stopped".
     func markFailed(abbr: String) {
         context.performAndWait {
             guard let cd = fetchBibleCd(abbr) else { return }
@@ -71,6 +78,7 @@ class BibleDataManager {
         }
     }
 
+    /// Must be called from inside `context.performAndWait`.
     private func fetchBibleCd(_ abbr: String) -> CDBible? {
         let request: NSFetchRequest<CDBible> = CDBible.fetchRequest()
         request.predicate = NSPredicate(format: "abbreviation == %@", abbr)
@@ -78,6 +86,7 @@ class BibleDataManager {
         return try? context.fetch(request).first
     }
 
+    /// Must be called from inside `context.performAndWait`.
     private func findOrCreateBible(abbreviation: String) -> CDBible {
         if let existing = fetchBibleCd(abbreviation) { return existing }
         let new = CDBible(context: context)
@@ -90,104 +99,138 @@ class BibleDataManager {
 
     func saveBooks(_ books: [Book], for abbr: String) {
         context.performAndWait {
+            let request: NSFetchRequest<CDBook> = CDBook.fetchRequest()
+            request.predicate = NSPredicate(format: "bibleAbbr == %@", abbr)
+            var existing: [String: CDBook] = [:]
+            for row in (try? context.fetch(request)) ?? [] {
+                if let id = row.id, existing[id] == nil { existing[id] = row }
+            }
+
             for book in books {
-                let cd = findOrCreateBook(id: book.id, abbr: abbr)
+                let cd: CDBook
+                if let found = existing[book.id] {
+                    cd = found
+                } else {
+                    cd = CDBook(context: context)
+                    cd.id = book.id
+                    cd.bibleAbbr = abbr
+                }
                 cd.abbreviation = book.abbreviation
                 cd.name = book.name
                 cd.nameLong = book.nameLong
                 cd.sortOrder = Int32(book.sortOrder)
             }
             try? context.save()
+            context.reset()
         }
     }
 
     func fetchBooks(for abbr: String) -> [Book] {
-        let request: NSFetchRequest<CDBook> = CDBook.fetchRequest()
-        request.predicate = NSPredicate(format: "bibleAbbr == %@", abbr)
-        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-        return (try? context.fetch(request))?.map(MapCdToEntity.mapToEntity(_:)) ?? []
-    }
-
-    private func findOrCreateBook(id: String, abbr: String) -> CDBook {
-        let request: NSFetchRequest<CDBook> = CDBook.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@ AND bibleAbbr == %@", id, abbr)
-        request.fetchLimit = 1
-        if let existing = try? context.fetch(request).first { return existing }
-        let new = CDBook(context: context)
-        new.id = id
-        new.bibleAbbr = abbr
-        return new
+        context.performAndWait {
+            let request: NSFetchRequest<CDBook> = CDBook.fetchRequest()
+            request.predicate = NSPredicate(format: "bibleAbbr == %@", abbr)
+            request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+            return (try? context.fetch(request))?.map(MapCdToEntity.mapToEntity(_:)) ?? []
+        }
     }
 
     // MARK: - Chapters
 
     func saveChapters(_ chapters: [Chapter], for abbr: String) {
         context.performAndWait {
+            let request: NSFetchRequest<CDChapter> = CDChapter.fetchRequest()
+            request.predicate = NSPredicate(format: "bibleAbbr == %@", abbr)
+            var existing: [String: CDChapter] = [:]
+            for row in (try? context.fetch(request)) ?? [] {
+                if let id = row.id, existing[id] == nil { existing[id] = row }
+            }
+
             for chapter in chapters {
-                let cd = findOrCreateChapter(id: chapter.id, abbr: abbr)
+                let cd: CDChapter
+                if let found = existing[chapter.id] {
+                    cd = found
+                } else {
+                    cd = CDChapter(context: context)
+                    cd.id = chapter.id
+                    cd.bibleAbbr = abbr
+                }
                 cd.bookId = chapter.bookId
                 cd.number = chapter.number
                 cd.reference = chapter.reference
             }
             try? context.save()
+            context.reset()
         }
     }
 
     func fetchChapters(for abbr: String, bookId: String) -> [Chapter] {
-        let request: NSFetchRequest<CDChapter> = CDChapter.fetchRequest()
-        request.predicate = NSPredicate(format: "bibleAbbr == %@ AND bookId == %@", abbr, bookId)
-        let all = (try? context.fetch(request))?.map(MapCdToEntity.mapToEntity(_:)) ?? []
-        // Chapter numbers are stored as strings, so sort numerically rather than lexically.
-        return all.sorted { (Int($0.number) ?? 0) < (Int($1.number) ?? 0) }
-    }
-
-    private func findOrCreateChapter(id: String, abbr: String) -> CDChapter {
-        let request: NSFetchRequest<CDChapter> = CDChapter.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@ AND bibleAbbr == %@", id, abbr)
-        request.fetchLimit = 1
-        if let existing = try? context.fetch(request).first { return existing }
-        let new = CDChapter(context: context)
-        new.id = id
-        new.bibleAbbr = abbr
-        return new
+        context.performAndWait {
+            let request: NSFetchRequest<CDChapter> = CDChapter.fetchRequest()
+            request.predicate = NSPredicate(format: "bibleAbbr == %@ AND bookId == %@", abbr, bookId)
+            let all = (try? context.fetch(request))?.map(MapCdToEntity.mapToEntity(_:)) ?? []
+            // Chapter numbers are stored as strings, so sort numerically rather than lexically.
+            return all.sorted { (Int($0.number) ?? 0) < (Int($1.number) ?? 0) }
+        }
     }
 
     // MARK: - Verses
 
     /// Chapter ids already cached for this Bible, so a resumed download can
     /// skip chapters it already has (mirrors Android's getCachedChapterIds).
+    /// Reads only the id column so it doesn't load every chapter's verse JSON.
     func cachedChapterIds(for abbr: String) -> Set<String> {
-        let request: NSFetchRequest<CDVerse> = CDVerse.fetchRequest()
-        request.predicate = NSPredicate(format: "bibleAbbr == %@", abbr)
-        let rows = (try? context.fetch(request)) ?? []
-        return Set(rows.compactMap(\.chapterId))
+        context.performAndWait {
+            let request = NSFetchRequest<NSDictionary>(entityName: "CDVerse")
+            request.predicate = NSPredicate(format: "bibleAbbr == %@", abbr)
+            request.resultType = .dictionaryResultType
+            request.propertiesToFetch = ["chapterId"]
+            let rows = (try? context.fetch(request)) ?? []
+            return Set(rows.compactMap { $0["chapterId"] as? String })
+        }
     }
 
     func saveVerseContent(_ content: VerseChapterContent) {
+        saveVerseContents([content])
+    }
+
+    /// Saves many chapters of one Bible in a single fetch + save (Android: `verseDao.insertAll`).
+    func saveVerseContents(_ contents: [VerseChapterContent]) {
+        guard let abbr = contents.first?.bibleAbbr else { return }
+
         context.performAndWait {
             let request: NSFetchRequest<CDVerse> = CDVerse.fetchRequest()
             request.predicate = NSPredicate(
-                format: "chapterId == %@ AND bibleAbbr == %@", content.chapterId, content.bibleAbbr
+                format: "bibleAbbr == %@ AND chapterId IN %@", abbr, contents.map(\.chapterId)
             )
-            request.fetchLimit = 1
-            let cd = (try? context.fetch(request).first) ?? CDVerse(context: context)
-            cd.chapterId = content.chapterId
-            cd.bibleAbbr = content.bibleAbbr
-            cd.bookId = content.bookId
-            cd.verseCount = Int32(content.verseCount)
-            cd.contentJson = (try? JSONEncoder().encode(content.verses))
-                .flatMap { String(data: $0, encoding: .utf8) } ?? "[]"
-            cd.cachedAt = Date()
+            var existing: [String: CDVerse] = [:]
+            for row in (try? context.fetch(request)) ?? [] {
+                if let id = row.chapterId, existing[id] == nil { existing[id] = row }
+            }
+
+            let encoder = JSONEncoder()
+            for content in contents {
+                let cd = existing[content.chapterId] ?? CDVerse(context: context)
+                cd.chapterId = content.chapterId
+                cd.bibleAbbr = content.bibleAbbr
+                cd.bookId = content.bookId
+                cd.verseCount = Int32(content.verseCount)
+                cd.contentJson = (try? encoder.encode(content.verses))
+                    .flatMap { String(data: $0, encoding: .utf8) } ?? "[]"
+                cd.cachedAt = Date()
+            }
             try? context.save()
+            context.reset() // release the verse JSON we just wrote
         }
     }
 
     func fetchVerseContent(for abbr: String, chapterId: String) -> VerseChapterContent? {
-        let request: NSFetchRequest<CDVerse> = CDVerse.fetchRequest()
-        request.predicate = NSPredicate(format: "chapterId == %@ AND bibleAbbr == %@", chapterId, abbr)
-        request.fetchLimit = 1
-        guard let cd = try? context.fetch(request).first else { return nil }
-        return MapCdToEntity.mapToEntity(cd)
+        context.performAndWait {
+            let request: NSFetchRequest<CDVerse> = CDVerse.fetchRequest()
+            request.predicate = NSPredicate(format: "chapterId == %@ AND bibleAbbr == %@", chapterId, abbr)
+            request.fetchLimit = 1
+            guard let cd = try? context.fetch(request).first else { return nil }
+            return MapCdToEntity.mapToEntity(cd)
+        }
     }
 
     // MARK: - Per-Bible cleanup
@@ -196,7 +239,8 @@ class BibleDataManager {
     /// `BibleRepo.deleteBible`).
     func deleteBible(abbr: String) {
         context.performAndWait {
-            deleteContent(for: abbr)
+            batchDeleteContent(for: abbr)
+            context.reset()
             if let cd = fetchBibleCd(abbr) { context.delete(cd) }
             try? context.save()
         }
@@ -207,7 +251,8 @@ class BibleDataManager {
     /// `BibleRepo.clearBibleContent`).
     func clearBibleContent(abbr: String) {
         context.performAndWait {
-            deleteContent(for: abbr)
+            batchDeleteContent(for: abbr)
+            context.reset()
             if let cd = fetchBibleCd(abbr) {
                 cd.isDownloaded = false
                 cd.downloadProgress = 0
@@ -218,25 +263,21 @@ class BibleDataManager {
     }
 
     /// Must be called from inside `context.performAndWait`.
-    private func deleteContent(for abbr: String) {
-        func deleteAll<T: NSManagedObject>(_ type: T.Type, entity: String) {
-            let request = NSFetchRequest<T>(entityName: entity)
-            request.predicate = NSPredicate(format: "bibleAbbr == %@", abbr)
-            (try? context.fetch(request))?.forEach { context.delete($0) }
+    private func batchDeleteContent(for abbr: String) {
+        for entity in ["CDVerse", "CDChapter", "CDBook"] {
+            let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+            fetch.predicate = NSPredicate(format: "bibleAbbr == %@", abbr)
+            _ = try? context.execute(NSBatchDeleteRequest(fetchRequest: fetch))
         }
-        deleteAll(CDVerse.self, entity: "CDVerse")
-        deleteAll(CDChapter.self, entity: "CDChapter")
-        deleteAll(CDBook.self, entity: "CDBook")
     }
 
     func deleteAllData() {
         context.performAndWait {
             for name in ["CDBible", "CDBook", "CDChapter", "CDVerse"] {
                 let request = NSFetchRequest<NSFetchRequestResult>(entityName: name)
-                let delete = NSBatchDeleteRequest(fetchRequest: request)
-                try? context.execute(delete)
+                _ = try? context.execute(NSBatchDeleteRequest(fetchRequest: request))
             }
-            try? context.save()
+            context.reset()
         }
     }
 }

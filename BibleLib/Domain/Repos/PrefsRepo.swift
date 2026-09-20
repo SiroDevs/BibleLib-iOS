@@ -33,6 +33,12 @@ class PrefsRepo {
         set { userDefaults.set(newValue, forKey: PrefConstants.primaryBibleAbbr) }
     }
 
+    /// Epoch millis of the last completed background Bible download (Android: `lastSyncedAt`).
+    var lastSyncedAt: Int {
+        get { userDefaults.integer(forKey: PrefConstants.lastSyncedAt) }
+        set { userDefaults.set(newValue, forKey: PrefConstants.lastSyncedAt) }
+    }
+
     /// Abbreviations of every Bible the user has chosen, in selection order
     /// (the first one is the primary). Mirrors Android's `selectedBibles`.
     var selectedBibles: [String] {
