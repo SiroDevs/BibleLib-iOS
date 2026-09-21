@@ -25,6 +25,8 @@ struct SelectionSection: Identifiable {
     var filter: CountryFilter?
     var items: [Selectable<BibleInfoDTO>] = []
 
+    var usesGrid: Bool { items.count > 1 }
+
     static func make(from entries: [GridEntry]) -> [SelectionSection] {
         var sections: [SelectionSection] = []
 
@@ -41,63 +43,6 @@ struct SelectionSection: Identifiable {
             }
         }
         return sections
-    }
-}
-
-struct BibleItem: View {
-    let bible: BibleInfoDTO
-    let isSelected: Bool
-    let isDisabled: Bool
-    let onTap: () -> Void
-
-    var body: some View {
-        Button(action: onTap) {
-            HStack(spacing: 12) {
-                Text(String(bible.abbreviation.uppercased().prefix(3)))
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(isSelected ? Color.white : Color.primary)
-                    .frame(width: 44, height: 44)
-                    .background(isSelected ? AppColors.primary : Color(.secondarySystemFill), in: RoundedRectangle(cornerRadius: 10))
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(bible.name)
-                        .font(.body)
-                        .foregroundStyle(.primary)
-                        .lineLimit(1)
-                    Text(bible.description.isEmpty ? bible.language.name : bible.description)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                    Text("\(bible.language.name) Bible".uppercased())
-                        .font(.caption2)
-                        .foregroundStyle(AppColors.secondary)
-                        .lineLimit(1)
-                }
-
-                Spacer(minLength: 0)
-
-                if isSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(AppColors.primary)
-                        .imageScale(.large)
-                }
-            }
-        }
-        .disabled(isDisabled)
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
-    }
-}
-
-struct BibleItemPlaceholder: View {
-    var body: some View {
-        HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 10).frame(width: 44, height: 44)
-            VStack(alignment: .leading, spacing: 4) {
-                Text("King James Version").font(.body)
-                Text("The classic English translation").font(.caption)
-            }
-        }
-        .redacted(reason: .placeholder)
     }
 }
 
@@ -159,3 +104,118 @@ struct DownloadFailedView: View {
         .frame(maxHeight: .infinity)
     }
 }
+
+#if DEBUG
+private struct PreviewBible: Identifiable {
+    let id: String   // abbreviation
+    let name: String
+    let subtitle: String
+    let language: String
+    var selected = false
+    var disabled = false
+}
+
+private let previewBibles: [PreviewBible] = [
+    .init(id: "KJV", name: "King James Version", subtitle: "The classic 1611 English translation", language: "English", selected: true),
+    .init(id: "NIV", name: "New International Version", subtitle: "New International Version 2011", language: "English"),
+    .init(id: "ESV", name: "English Standard Version", subtitle: "Essentially literal translation", language: "English"),
+    .init(id: "NKJ", name: "New King James Version", subtitle: "Modern update of the KJV", language: "English"),
+    .init(id: "NLT", name: "New Living Translation", subtitle: "Thought-for-thought translation", language: "English"),
+    .init(id: "CSB", name: "Christian Standard Bible", subtitle: "Optimal equivalence", language: "English"),
+    .init(id: "SW", name: "Biblia Takatifu", subtitle: "Open Kiswahili Contemporary Version (Neno) 2015", language: "Swahili", disabled: true),
+    .init(id: "SUV", name: "Swahili Union Version", subtitle: "Biblia Habari Njema", language: "Swahili", disabled: true),
+    .init(id: "ASV", name: "American Standard Version", subtitle: "1901 revision of the KJV", language: "English"),
+    .init(id: "WEB", name: "World English Bible", subtitle: "Public domain modern English", language: "English"),
+    .init(id: "GNB", name: "Good News Bible", subtitle: "Today's English Version", language: "English"),
+    .init(id: "RSV", name: "Revised Standard Version", subtitle: "1952 revision of the ASV", language: "English"),
+]
+
+private func previewCard(_ bible: PreviewBible, layout: BibleItemLayout) -> some View {
+    BibleItemView(
+        abbreviation: bible.id, name: bible.name, subtitle: bible.subtitle, language: bible.language,
+        isSelected: bible.selected, isDisabled: bible.disabled, layout: layout, onTap: {}
+    )
+}
+
+private struct PreviewGrid: View {
+    var count = previewBibles.count
+
+    var body: some View {
+        ScrollView {
+            BibleGrid {
+                ForEach(previewBibles.prefix(count)) { previewCard($0, layout: .grid) }
+            }
+            .padding(BibleMetrics.screenPadding)
+        }
+        .background(MaterialColors.background)
+        .environmentObject(ThemeManager())
+    }
+}
+
+#Preview("Row") {
+    ScrollView {
+        VStack(spacing: BibleMetrics.gap) {
+            ForEach(previewBibles.prefix(3)) { previewCard($0, layout: .row) }
+        }
+        .padding(BibleMetrics.screenPadding)
+    }
+    .background(MaterialColors.background)
+    .environmentObject(ThemeManager())
+}
+
+#Preview("Grid - iPhone (2 columns)") {
+    PreviewGrid(count: 6)
+}
+
+#Preview("Grid - iPhone, dark") {
+    PreviewGrid(count: 6)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Grouped: grid + row") {
+    ScrollView {
+        LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+            Section {
+                BibleGrid {
+                    ForEach(previewBibles.prefix(3)) { previewCard($0, layout: .grid) }
+                }
+                .padding(.horizontal, BibleMetrics.screenPadding)
+                .padding(.bottom, BibleMetrics.gap)
+            } header: {
+                Text("English").font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, BibleMetrics.screenPadding)
+                    .padding(.vertical, 6)
+            }
+            Section {
+                previewCard(previewBibles[6], layout: .row)
+                    .padding(.horizontal, BibleMetrics.screenPadding)
+            } header: {
+                Text("Swahili").font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, BibleMetrics.screenPadding)
+                    .padding(.vertical, 6)
+            }
+        }
+    }
+    .background(MaterialColors.background)
+    .environmentObject(ThemeManager())
+}
+
+// Regular width = iPad. Widths are typical window widths; the size class is forced because
+// a fixed-layout preview doesn't derive it from the width.
+#Preview("Grid - iPad portrait (3 columns)", traits: .fixedLayout(width: 744, height: 500)) {
+    PreviewGrid()
+        .environment(\.horizontalSizeClass, .regular)
+}
+
+#Preview("Grid - iPad 13\" portrait (4 columns)", traits: .fixedLayout(width: 1032, height: 500)) {
+    PreviewGrid()
+        .environment(\.horizontalSizeClass, .regular)
+}
+
+#Preview("Grid - iPad 13\" landscape (6 columns)", traits: .fixedLayout(width: 1376, height: 400)) {
+    PreviewGrid()
+        .environment(\.horizontalSizeClass, .regular)
+}
+#endif

@@ -27,11 +27,14 @@ struct SelectionView: View {
     var body: some View {
         NavigationStack {
             content
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(MaterialColors.background)
                 .navigationTitle("BibleLib: Multi-Bible Reader")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar { toolbar }
-                .safeAreaInset(edge: .bottom, spacing: 0) { continueBar }
+                .toolbar(showsContinueBar ? .visible : .hidden, for: .bottomBar)
         }
+        .tint(MaterialColors.primary)
         .sheet(isPresented: $showThemes) { ThemeSelectorSheet() }
         .task { viewModel.fetchBibles() }
         .onChange(of: viewModel.uiState) { state in
@@ -43,11 +46,13 @@ struct SelectionView: View {
     private var content: some View {
         switch viewModel.uiState {
         case .loading:
-            List(0..<8, id: \.self) { _ in
-                BibleItemPlaceholder()
+            ScrollView {
+                BibleGrid {
+                    ForEach(0..<12, id: \.self) { _ in BibleItemPlaceholder() }
+                }
+                .padding(BibleMetrics.screenPadding)
             }
-            .listStyle(.insetGrouped)
-            .disabled(true)
+            .scrollDisabled(true)
         case .error(let message):
             ErrorState(message: message) { viewModel.fetchBibles() }
         case .saving:
@@ -77,10 +82,12 @@ struct SelectionView: View {
             }
         }
         .pickerStyle(.segmented)
-        .padding(.horizontal)
-        .padding(.vertical, 8)
+        .padding(.horizontal, BibleMetrics.screenPadding)
+        .padding(.vertical, 4)
     }
 
+    // ScrollView + LazyVStack instead of List: a List (insetGrouped) adds wide side margins and,
+    // on iPad, a readable-width cap, which is what limited the grid to two columns.
     private var biblesList: some View {
         let entries = buildGridEntries(
             bibles: viewModel.bibles,
@@ -89,25 +96,49 @@ struct SelectionView: View {
             countryFilters: countryFilters
         )
 
-        return List {
-            ForEach(SelectionSection.make(from: entries)) { section in
-                Section {
-                    if let filter = section.filter { countryPicker(filter) }
-                    ForEach(section.items, id: \.data.abbreviation) { bible in
-                        BibleItem(
-                            bible: bible.data,
-                            isSelected: bible.isSelected,
-                            isDisabled: !bible.isSelected && viewModel.selectedCount >= viewModel.maxSelections
-                        ) {
-                            viewModel.toggleSelection(bible.data.abbreviation)
+        return ScrollView {
+            LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                ForEach(SelectionSection.make(from: entries)) { section in
+                    Section {
+                        VStack(spacing: BibleMetrics.gap) {
+                            if let filter = section.filter { countryPicker(filter) }
+                            sectionItems(section)
                         }
+                        .padding(.horizontal, BibleMetrics.screenPadding)
+                        .padding(.bottom, BibleMetrics.gap)
+                    } header: {
+                        if let header = section.header { groupHeader(header) }
                     }
-                } header: {
-                    if let header = section.header { groupHeader(header) }
                 }
             }
         }
-        .listStyle(.insetGrouped)
+    }
+
+    /// 2+ items in a group -> fluid grid; exactly 1 item -> a normal row.
+    @ViewBuilder
+    private func sectionItems(_ section: SelectionSection) -> some View {
+        if section.usesGrid {
+            BibleGrid {
+                ForEach(section.items, id: \.data.abbreviation) { bible in
+                    bibleItem(bible, layout: .grid)
+                }
+            }
+        } else {
+            ForEach(section.items, id: \.data.abbreviation) { bible in
+                bibleItem(bible, layout: .row)
+            }
+        }
+    }
+
+    private func bibleItem(_ bible: Selectable<BibleInfoDTO>, layout: BibleItem.Layout) -> some View {
+        BibleItem(
+            bible: bible.data,
+            isSelected: bible.isSelected,
+            isDisabled: !bible.isSelected && viewModel.selectedCount >= viewModel.maxSelections,
+            layout: layout
+        ) {
+            viewModel.toggleSelection(bible.data.abbreviation)
+        }
     }
 
     private func groupHeader(_ header: SelectionSection.Header) -> some View {
@@ -126,8 +157,13 @@ struct SelectionView: View {
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.secondary)
             }
-            .textCase(nil)
+            .padding(.horizontal, BibleMetrics.screenPadding)
+            .padding(.vertical, 6)
+            .frame(maxWidth: .infinity)
+            .background(MaterialColors.background)   // solid, so pinned headers hide the cards under them
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
     }
 
     private func countryPicker(_ filter: SelectionSection.CountryFilter) -> some View {
@@ -140,6 +176,7 @@ struct SelectionView: View {
             }
         }
         .pickerStyle(.menu)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var showsChrome: Bool {
@@ -147,6 +184,11 @@ struct SelectionView: View {
         case .saving, .saveFailed: return false
         default: return true
         }
+    }
+
+    private var showsContinueBar: Bool {
+        if case .loaded = viewModel.uiState { return true }
+        return false
     }
 
     @ToolbarContentBuilder
@@ -176,21 +218,18 @@ struct SelectionView: View {
                     .accessibilityLabel("Theme")
             }
         }
-    }
 
-    @ViewBuilder
-    private var continueBar: some View {
-        if case .loaded = viewModel.uiState {
-            Button {
-                if viewModel.isFirstInstall { viewModel.saveSelectionAndDownload() } else { viewModel.saveSelectionInBackground() }
-            } label: {
-                Text("Continue").frame(maxWidth: .infinity)
+        ToolbarItem(placement: .bottomBar) {
+            if showsContinueBar {
+                Button {
+                    if viewModel.isFirstInstall { viewModel.saveSelectionAndDownload() } else { viewModel.saveSelectionInBackground() }
+                } label: {
+                    Text("Continue").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .disabled(!viewModel.canProceed)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .disabled(!viewModel.canProceed)
-            .padding()
-            .background(.bar)
         }
     }
 }
