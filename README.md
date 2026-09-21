@@ -1,4 +1,4 @@
-# BibleLib: Multi-Bible Reader
+# BibleLib: Multi-Bible Reader for iOS
 
 A clean, offline-first Bible reader built for focused study. Explore a number of translations side by side, search instantly, personalize your reading experience, and keep everything organized with bookmarks, notes, reading history, and reusable scripture lists for sermons, studies, or personal devotions.
 
