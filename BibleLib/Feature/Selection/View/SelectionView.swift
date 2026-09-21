@@ -27,7 +27,7 @@ struct SelectionView: View {
     var body: some View {
         NavigationStack {
             content
-                .navigationTitle("Choose Bibles")
+                .navigationTitle("BibleLib: Multi-Bible Reader")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar { toolbar }
                 .safeAreaInset(edge: .bottom, spacing: 0) { continueBar }
@@ -39,14 +39,12 @@ struct SelectionView: View {
         }
     }
 
-    // MARK: Content
-
     @ViewBuilder
     private var content: some View {
         switch viewModel.uiState {
         case .loading:
             List(0..<8, id: \.self) { _ in
-                BibleRowPlaceholder()
+                BibleItemPlaceholder()
             }
             .listStyle(.insetGrouped)
             .disabled(true)
@@ -96,7 +94,7 @@ struct SelectionView: View {
                 Section {
                     if let filter = section.filter { countryPicker(filter) }
                     ForEach(section.items, id: \.data.abbreviation) { bible in
-                        BibleRow(
+                        BibleItem(
                             bible: bible.data,
                             isSelected: bible.isSelected,
                             isDisabled: !bible.isSelected && viewModel.selectedCount >= viewModel.maxSelections
@@ -144,8 +142,6 @@ struct SelectionView: View {
         .pickerStyle(.menu)
     }
 
-    // MARK: Chrome
-
     private var showsChrome: Bool {
         switch viewModel.uiState {
         case .saving, .saveFailed: return false
@@ -163,9 +159,9 @@ struct SelectionView: View {
 
         ToolbarItem(placement: .principal) {
             VStack(spacing: 0) {
-                Text("Choose Bibles").font(.headline)
+                Text("BibleLib: Multi-Bible Reader").font(.headline)
                 if showsChrome {
-                    Text("\(viewModel.selectedCount) of \(viewModel.maxSelections) selected")
+                    Text("\(viewModel.selectedCount) of \(viewModel.maxSelections) Bibles Selected")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

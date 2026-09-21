@@ -25,7 +25,6 @@ struct SelectionSection: Identifiable {
     var filter: CountryFilter?
     var items: [Selectable<BibleInfoDTO>] = []
 
-    /// Groups the flat grid entries into one List section per header.
     static func make(from entries: [GridEntry]) -> [SelectionSection] {
         var sections: [SelectionSection] = []
 
@@ -45,7 +44,7 @@ struct SelectionSection: Identifiable {
     }
 }
 
-struct BibleRow: View {
+struct BibleItem: View {
     let bible: BibleInfoDTO
     let isSelected: Bool
     let isDisabled: Bool
@@ -89,7 +88,7 @@ struct BibleRow: View {
     }
 }
 
-struct BibleRowPlaceholder: View {
+struct BibleItemPlaceholder: View {
     var body: some View {
         HStack(spacing: 12) {
             RoundedRectangle(cornerRadius: 10).frame(width: 44, height: 44)

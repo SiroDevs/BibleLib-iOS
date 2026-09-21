@@ -42,7 +42,6 @@ struct AppTopBar<Actions: View>: View {
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
-//                    .textStyle(.titleLarge)
                     .lineLimit(titleMaxLines)
                     .truncationMode(.tail)
 
@@ -88,7 +87,6 @@ extension AppTopBar where Actions == EmptyView {
     }
 }
 
-/// Material IconButton: a 24pt icon centered in a 48pt touch target.
 struct AppIconButton: View {
     let systemName: String
     let accessibilityLabel: String
