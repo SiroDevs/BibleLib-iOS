@@ -2,62 +2,48 @@
 //  ReadingSettingsView.swift
 //  BibleLib
 //
-//  Created by @sirodevs on 20/09/2026.
+//  Created by @sirodevs on 21/09/2026.
 //
 
 import SwiftUI
 
 struct ReadingSettingsView: View {
-    @StateObject private var viewModel = DiContainer.shared.resolve(SettingsViewModel.self)
+    @AppStorage(PrefConstants.fontSize) private var fontSize = ReaderFontSize.standard
+    @AppStorage(PrefConstants.readerFontFamily) private var fontFamily = "default"
+    @AppStorage(PrefConstants.readerBackground) private var backgroundId = "default"
 
     var body: some View {
-        let background = ReaderBackgrounds.byId(viewModel.readerBackgroundId)
-        let font = ReaderFonts.byId(viewModel.readerFontFamilyId)
+        let page = ReaderBackgrounds.byId(backgroundId)
 
         Form {
             Section("Preview") {
                 Text("In the beginning God created the heavens and the earth.")
-                    .font(font.font(size: CGFloat(viewModel.fontSize)))
-                    .foregroundStyle(background.textColor)
+                    .font(ReaderFonts.byId(fontFamily).font(size: CGFloat(fontSize)))
+                    .foregroundStyle(page.textColor)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.vertical, 8)
-                    .listRowBackground(Rectangle().fill(background.background))
+                    .listRowBackground(Rectangle().fill(page.background))
             }
 
-            Section("Font size: \(Int(viewModel.fontSize)) pt") {
+            Section("Font size: \(Int(fontSize)) pt") {
                 HStack(spacing: 12) {
                     Image(systemName: "textformat.size.smaller")
-                    Slider(
-                        value: Binding(get: { viewModel.fontSize }, set: { viewModel.setFontSize($0) }),
-                        in: ReaderFontSize.minimum...ReaderFontSize.maximum,
-                        step: 2
-                    )
+                    Slider(value: $fontSize, in: ReaderFontSize.minimum...ReaderFontSize.maximum, step: 2)
                     Image(systemName: "textformat.size.larger")
                 }
                 .foregroundStyle(.secondary)
             }
 
-            Section("Font Type") {
-                ForEach(ReaderFonts.all) { option in
-                    Button {
-                        viewModel.setReaderFontFamily(option.id)
-                    } label: {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(option.displayName)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                Text("In the beginning was the Word,")
-                                    .font(option.font(size: 17))
-                                    .foregroundStyle(.primary)
-                            }
-                            Spacer()
-                            if viewModel.readerFontFamilyId == option.id {
-                                Image(systemName: "checkmark").foregroundStyle(AppColors.primary)
-                            }
-                        }
+            Section("Font") {
+                Picker("Font", selection: $fontFamily) {
+                    ForEach(ReaderFonts.all) { option in
+                        Text(option.displayName)
+                            .font(option.font(size: 17))
+                            .tag(option.id)
                     }
                 }
+                .pickerStyle(.inline)
+                .labelsHidden()
             }
         }
         .navigationTitle("Reading")

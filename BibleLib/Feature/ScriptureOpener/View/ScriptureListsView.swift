@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct ScriptureListsView: View {
+    let onOpen: (ReaderTarget) -> Void
+
     @StateObject private var viewModel = DiContainer.shared.resolve(ScriptureListsViewModel.self)
-    @EnvironmentObject private var router: AppRouter
 
     @State private var renaming: ScriptureListSummary?
     @State private var renameText = ""
@@ -18,8 +19,8 @@ struct ScriptureListsView: View {
     var body: some View {
         List {
             ForEach(viewModel.lists) { summary in
-                Button {
-                    router.push(.scriptureListDetail(id: summary.id))
+                NavigationLink {
+                    ScriptureListDetailView(listId: summary.id, onOpen: onOpen)
                 } label: {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(summary.list.name).font(.headline).foregroundStyle(.primary)
@@ -79,9 +80,10 @@ struct ScriptureListsView: View {
 
 struct ScriptureListDetailView: View {
     let listId: Int64
+    let onOpen: (ReaderTarget) -> Void
 
     @StateObject private var viewModel = DiContainer.shared.resolve(ScriptureListDetailViewModel.self)
-    @EnvironmentObject private var router: AppRouter
+    @Environment(\.dismiss) private var dismiss
 
     @State private var showRename = false
     @State private var renameText = ""
@@ -92,7 +94,7 @@ struct ScriptureListDetailView: View {
             Section {
                 ForEach(viewModel.items) { item in
                     Button {
-                        if let target = viewModel.open(startingAt: item) { router.openReader(target) }
+                        if let target = viewModel.open(startingAt: item) { onOpen(target) }
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
@@ -102,7 +104,7 @@ struct ScriptureListDetailView: View {
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .font(.footnote.weight(.semibold))
-                                .foregroundStyle(.tertiary)
+                                .foregroundStyle(Color(.tertiaryLabel))
                         }
                     }
                 }
@@ -113,7 +115,7 @@ struct ScriptureListDetailView: View {
             if !viewModel.items.isEmpty {
                 Section {
                     Button {
-                        if let target = viewModel.open() { router.openReader(target) }
+                        if let target = viewModel.open() { onOpen(target) }
                     } label: {
                         Label("Read This List", systemImage: "book")
                             .frame(maxWidth: .infinity)
@@ -156,7 +158,7 @@ struct ScriptureListDetailView: View {
             Text("This removes the list and its scriptures.")
         }
         .onChange(of: viewModel.deleted) { deleted in
-            if deleted { router.pop() }
+            if deleted { dismiss() }
         }
         .onAppear { viewModel.load(id: listId) }
     }

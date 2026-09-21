@@ -2,8 +2,7 @@
 //  BibleLookup.swift
 //  BibleLib
 //
-//  Turns stored ids (bible/book/chapter/verse) back into readable references and
-//  text for list screens such as Bookmarks, Search and History.
+//  Created by @sirodevs on 20/09/2026.
 //
 
 import Foundation

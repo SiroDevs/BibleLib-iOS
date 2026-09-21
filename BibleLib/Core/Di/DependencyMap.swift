@@ -81,10 +81,10 @@ struct DependencyMap {
         container.register(ReaderViewModel.self) { resolver in
             ReaderViewModel(
                 bibleRepo: resolver.resolve(BibleRepoProtocol.self)!,
-                prefsRepo: resolver.resolve(PrefsRepo.self)!,
-                annotationRepo: resolver.resolve(AnnotationRepo.self)!,
-                trackingRepo: resolver.resolve(TrackingRepo.self)!,
-                queueRepo: resolver.resolve(ScriptureQueueRepo.self)!
+                prefs: resolver.resolve(PrefsRepo.self)!,
+                annotations: resolver.resolve(AnnotationRepo.self)!,
+                tracking: resolver.resolve(TrackingRepo.self)!,
+                queue: resolver.resolve(ScriptureQueueRepo.self)!
             )
         }
 

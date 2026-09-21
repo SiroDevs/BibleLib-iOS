@@ -62,4 +62,70 @@ struct MapCdToEntity {
             verses: verses
         )
     }
+
+    static func mapToEntity(_ cd: CDBookmark) -> Bookmark {
+        Bookmark(
+            verseId: cd.verseId ?? "",
+            bibleAbbr: cd.bibleAbbr ?? "",
+            bookId: cd.bookId ?? "",
+            chapterId: cd.chapterId ?? "",
+            colorHex: cd.colorHex,
+            createdAt: cd.createdAt ?? Date()
+        )
+    }
+
+    static func mapToEntity(_ cd: CDNote) -> Note {
+        Note(
+            verseId: cd.verseId ?? "",
+            bibleAbbr: cd.bibleAbbr ?? "",
+            bookId: cd.bookId ?? "",
+            chapterId: cd.chapterId ?? "",
+            title: cd.title ?? "",
+            verseText: cd.verseText ?? "",
+            noteText: cd.noteText ?? "",
+            updatedAt: cd.updatedAt ?? Date()
+        )
+    }
+
+    static func mapToEntity(_ cd: CDHistory) -> HistoryEntry {
+        HistoryEntry(
+            id: cd.entryId ?? UUID().uuidString,
+            bibleAbbr: cd.bibleAbbr ?? "",
+            bibleName: cd.bibleName ?? "",
+            bookId: cd.bookId ?? "",
+            bookName: cd.bookName ?? "",
+            chapterId: cd.chapterId ?? "",
+            chapterRef: cd.chapterRef ?? "",
+            verseNumber: cd.verseNumber > 0 ? Int(cd.verseNumber) : nil,
+            dayKey: cd.dayKey ?? "",
+            readAt: cd.readAt ?? Date()
+        )
+    }
+
+    static func mapToEntity(_ cd: CDSearch) -> SearchEntry {
+        SearchEntry(id: cd.searchId ?? UUID().uuidString, qry: cd.qry ?? "", queriedAt: cd.queriedAt ?? Date())
+    }
+
+    static func mapToEntity(_ cd: CDScriptureList) -> ScriptureList {
+        ScriptureList(id: cd.listId, name: cd.name ?? "", createdAt: cd.createdAt ?? Date())
+    }
+
+    static func mapToEntity(_ cd: CDScriptureItem) -> ScriptureItem {
+        ScriptureItem(
+            id: cd.itemId,
+            listId: cd.listId,
+            bibleAbbr: cd.bibleAbbr ?? "",
+            bibleName: cd.bibleName ?? "",
+            bookId: cd.bookId ?? "",
+            bookName: cd.bookName ?? "",
+            bookAbbr: cd.bookAbbr ?? "",
+            chapterId: cd.chapterId ?? "",
+            chapterNumber: cd.chapterNumber ?? "",
+            verseId: cd.verseId ?? "",
+            verseNumber: Int(cd.verseNumber),
+            reference: cd.reference ?? "",
+            sortOrder: Int(cd.sortOrder),
+            addedAt: cd.addedAt ?? Date()
+        )
+    }
 }

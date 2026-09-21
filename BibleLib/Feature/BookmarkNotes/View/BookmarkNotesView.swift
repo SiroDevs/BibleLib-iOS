@@ -9,7 +9,8 @@ import SwiftUI
 
 struct BookmarkNotesView: View {
     @StateObject private var viewModel = DiContainer.shared.resolve(BookmarkNotesViewModel.self)
-    @EnvironmentObject private var router: AppRouter
+    let onOpen: (ReaderTarget) -> Void
+
 
     @State private var tab = 0
     @State private var showClearConfirm = false
@@ -26,8 +27,11 @@ struct BookmarkNotesView: View {
                 }
             } else {
                 ForEach(viewModel.notes) { item in
-                    Button { openNote(item) } label: { noteRow(item) }
-                        .buttonStyle(.plain)
+                    NavigationLink {
+                        NotesView(request: noteRequest(for: item))
+                    } label: {
+                        noteRow(item)
+                    }
                 }
                 .onDelete { offsets in
                     viewModel.deleteNotes(offsets.map { viewModel.notes[$0] })
@@ -114,13 +118,13 @@ struct BookmarkNotesView: View {
                 .lineLimit(3)
             Text(item.note.updatedAt, style: .date)
                 .font(.caption)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(Color(.tertiaryLabel))
         }
         .padding(.vertical, 2)
     }
 
     private func openBookmark(_ item: BookmarkItem) {
-        router.openReader(ReaderTarget(
+        onOpen(ReaderTarget(
             bibleAbbr: item.bookmark.bibleAbbr,
             bookId: item.bookmark.bookId,
             chapterId: item.bookmark.chapterId,
@@ -128,14 +132,14 @@ struct BookmarkNotesView: View {
         ))
     }
 
-    private func openNote(_ item: NoteItem) {
-        router.push(.notes(NotesRequest(
+    private func noteRequest(for item: NoteItem) -> NotesRequest {
+        NotesRequest(
             bibleAbbr: item.note.bibleAbbr,
             verseId: item.note.verseId,
             bookId: item.note.bookId,
             chapterId: item.note.chapterId,
             title: item.note.title,
             verseText: item.note.verseText
-        )))
+        )
     }
 }

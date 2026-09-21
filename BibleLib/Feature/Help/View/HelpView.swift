@@ -46,7 +46,7 @@ struct HelpView: View {
                     .overlay(alignment: .topLeading) {
                         if details.isEmpty {
                             Text("Describe the issue or your suggestion in detail...")
-                                .foregroundStyle(.tertiary)
+                                .foregroundStyle(Color(.tertiaryLabel))
                                 .padding(.top, 8)
                                 .padding(.leading, 5)
                                 .allowsHitTesting(false)
@@ -116,7 +116,10 @@ struct HelpView: View {
                 recipient: Self.supportEmail,
                 subject: "BibleLib: \(trimmedTitle)",
                 body: emailBody,
-                attachments: attachments
+                attachments: attachments.enumerated().map { index, data in
+                    (data: data, mimeType: "image/jpeg", fileName: "attachment_\(index + 1).jpg")
+                },
+                onFinish: { showMailComposer = false }
             )
         }
         .alert("Can't send email", isPresented: $showNoMailAlert) {
@@ -167,43 +170,5 @@ struct HelpView: View {
             URLQueryItem(name: "body", value: emailBody),
         ]
         return components.url
-    }
-}
-
-struct MailComposeView: UIViewControllerRepresentable {
-    let recipient: String
-    let subject: String
-    let body: String
-    let attachments: [Data]
-
-    @Environment(\.dismiss) private var dismiss
-
-    func makeUIViewController(context: Context) -> MFMailComposeViewController {
-        let controller = MFMailComposeViewController()
-        controller.mailComposeDelegate = context.coordinator
-        controller.setToRecipients([recipient])
-        controller.setSubject(subject)
-        controller.setMessageBody(body, isHTML: false)
-        for (index, data) in attachments.enumerated() {
-            controller.addAttachmentData(data, mimeType: "image/jpeg", fileName: "attachment_\(index + 1).jpg")
-        }
-        return controller
-    }
-
-    func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: Context) {}
-
-    func makeCoordinator() -> Coordinator { Coordinator(dismiss: dismiss) }
-
-    final class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
-        let dismiss: DismissAction
-        init(dismiss: DismissAction) { self.dismiss = dismiss }
-
-        func mailComposeController(
-            _ controller: MFMailComposeViewController,
-            didFinishWith result: MFMailComposeResult,
-            error: Error?
-        ) {
-            dismiss()
-        }
     }
 }

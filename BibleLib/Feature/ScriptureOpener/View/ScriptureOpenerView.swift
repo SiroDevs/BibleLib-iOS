@@ -10,9 +10,10 @@ import SwiftUI
 struct ScriptureOpenerView: View {
     let bibleAbbr: String
     let bibleName: String
+    let onOpen: (ReaderTarget) -> Void
 
     @StateObject private var viewModel = DiContainer.shared.resolve(ScriptureOpenerViewModel.self)
-    @EnvironmentObject private var router: AppRouter
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         Group {
@@ -47,12 +48,12 @@ struct ScriptureOpenerView: View {
         .onChange(of: viewModel.readerTarget) { target in
             guard let target else { return }
             viewModel.consumeReaderTarget()
-            router.openReader(target)
+            onOpen(target)
         }
         .onChange(of: viewModel.closeRequested) { requested in
             guard requested else { return }
             viewModel.consumeClose()
-            router.pop()
+            dismiss()
         }
     }
 
@@ -99,7 +100,7 @@ struct ScriptureOpenerView: View {
                     .foregroundStyle(value.isEmpty ? Color.secondary : AppColors.primary)
                 Image(systemName: row.expanded == field ? "chevron.up" : "chevron.down")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(Color(.tertiaryLabel))
             }
         }
         .disabled(!enabled)

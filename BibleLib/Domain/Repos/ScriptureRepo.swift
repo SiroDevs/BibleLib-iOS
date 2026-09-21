@@ -2,8 +2,7 @@
 //  ScriptureRepo.swift
 //  BibleLib
 //
-//  Saved scripture lists (Android: ScriptureRepo) and the in-memory reading queue
-//  the reader shows while a list is open (Android: ScriptureQueueRepo).
+//  Created by @sirodevs on 20/09/2026.
 //
 
 import Foundation
@@ -27,8 +26,6 @@ final class ScriptureRepo {
     func deleteList(id: Int64) { data.deleteScriptureList(id: id) }
 }
 
-/// The scripture list currently "open" in the reader. Observable so the reader's
-/// queue bar updates as soon as the opener or a saved list fills it.
 final class ScriptureQueueRepo: ObservableObject {
     @Published private(set) var listId: Int64?
     @Published private(set) var listName = ""

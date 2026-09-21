@@ -34,9 +34,6 @@ enum ClearTarget: Identifiable {
 }
 
 final class SettingsViewModel: ObservableObject {
-    @Published var fontSize: Double
-    @Published var readerFontFamilyId: String
-    @Published var readerBackgroundId: String
     @Published var pendingClear: ClearTarget?
 
     private let prefsRepo: PrefsRepo
@@ -60,24 +57,6 @@ final class SettingsViewModel: ObservableObject {
         self.trackingRepo = trackingRepo
         self.scriptureRepo = scriptureRepo
         self.syncScheduler = syncScheduler
-        fontSize = prefsRepo.fontSize
-        readerFontFamilyId = prefsRepo.readerFontFamily
-        readerBackgroundId = prefsRepo.readerBackground
-    }
-
-    func setFontSize(_ size: Double) {
-        prefsRepo.fontSize = size
-        fontSize = size
-    }
-
-    func setReaderFontFamily(_ id: String) {
-        prefsRepo.readerFontFamily = id
-        readerFontFamilyId = id
-    }
-
-    func setReaderBackground(_ id: String) {
-        prefsRepo.readerBackground = id
-        readerBackgroundId = id
     }
 
     /// Returns true when everything was wiped and the app should restart at Bible selection.
@@ -103,7 +82,6 @@ final class SettingsViewModel: ObservableObject {
             scriptureRepo.allLists().forEach { scriptureRepo.deleteList(id: $0.id) }
             bibleRepo.deleteAllData()
             prefsRepo.resetPrefs()
-            NotificationCenter.default.post(name: .appDataDidReset, object: nil)
             return true
         }
         return false

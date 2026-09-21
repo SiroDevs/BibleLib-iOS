@@ -2,183 +2,88 @@
 //  SelectionView.swift
 //  BibleLib
 //
-//  Created by @sirodevs on 14/09/2026.
+//  Created by @sirodevs on 21/09/2026.
 //
 
 import SwiftUI
 
 struct SelectionView: View {
-    @StateObject private var viewModel: SelectionViewModel = DiContainer.shared.resolve(SelectionViewModel.self)
+    @StateObject private var viewModel = DiContainer.shared.resolve(SelectionViewModel.self)
     @EnvironmentObject private var themeManager: ThemeManager
     @Environment(\.dismiss) private var dismiss
 
     let onFinished: (String) -> Void
     let onCancel: (() -> Void)?
 
+    @State private var showThemes = false
+    @State private var expandedGroups: [String: Bool] = [:]
+    @State private var countryFilters: [String: String] = [:]
+
     init(onFinished: @escaping (String) -> Void = { _ in }, onCancel: (() -> Void)? = nil) {
         self.onFinished = onFinished
         self.onCancel = onCancel
     }
 
-    @State private var showThemeDialog = false
-    @State private var expandedGroups: [String: Bool] = [:]
-    @State private var countryFilters: [String: String] = [:]
-
-    private var showChrome: Bool {
-        switch viewModel.uiState {
-        case .saving, .saveFailed: return false
-        default: return true
-        }
-    }
-
-    private var isLoaded: Bool {
-        if case .loaded = viewModel.uiState { return true }
-        return false
-    }
-
     var body: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                topBar
-
-                content
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .overlay(alignment: .bottomTrailing) {
-                        if !viewModel.isFirstInstall && isLoaded {
-                            cancelButton
-                        }
-                    }
-
-                if isLoaded {
-                    ProceedBar(canProceed: viewModel.canProceed) {
-                        if viewModel.isFirstInstall {
-                            viewModel.saveSelectionAndDownload()
-                        } else {
-                            viewModel.saveSelectionInBackground()
-                        }
-                    }
-                }
-            }
-            .background(AppColors.background.ignoresSafeArea())
-
-            if showThemeDialog {
-                ThemeSelectorDialog(
-                    current: themeManager.selectedTheme,
-                    onDismiss: { showThemeDialog = false },
-                    onThemeSelected: { themeManager.selectedTheme = $0 }
-                )
-                .transition(.opacity)
-            }
+        NavigationStack {
+            content
+                .navigationTitle("Choose Bibles")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar { toolbar }
+                .safeAreaInset(edge: .bottom, spacing: 0) { continueBar }
         }
-        .animation(.easeInOut(duration: 0.2), value: showThemeDialog)
+        .sheet(isPresented: $showThemes) { ThemeSelectorSheet() }
         .task { viewModel.fetchBibles() }
         .onChange(of: viewModel.uiState) { state in
-            if case .saved = state, let abbr = viewModel.savedPrimaryAbbr {
-                onFinished(abbr)
-            }
+            if case .saved = state, let abbr = viewModel.savedPrimaryAbbr { onFinished(abbr) }
         }
     }
 
-    @ViewBuilder
-    private var topBar: some View {
-        if showChrome {
-            AppTopBar(
-                title: "BibleLib: Multi-Bible Reader",
-                tagline: "\(viewModel.selectedCount) / \(viewModel.maxSelections) bibles selected"
-            ) {
-                AppIconButton(systemName: "arrow.clockwise", accessibilityLabel: "Refresh") {
-                    viewModel.fetchBibles()
-                }
-                AppIconButton(systemName: "circle.lefthalf.filled", accessibilityLabel: "Theme") {
-                    showThemeDialog = true
-                }
-            }
-        } else {
-            AppTopBar(title: "BibleLib: Multi-Bible Reader")
-        }
-    }
+    // MARK: Content
 
     @ViewBuilder
     private var content: some View {
         switch viewModel.uiState {
         case .loading:
-            BibleCardShimmer()
-
+            List(0..<8, id: \.self) { _ in
+                BibleRowPlaceholder()
+            }
+            .listStyle(.insetGrouped)
+            .disabled(true)
         case .error(let message):
-            RetryErrorState(message: message) { viewModel.fetchBibles() }
-
+            ErrorState(message: message) { viewModel.fetchBibles() }
         case .saving:
-            BibleSavingProgress(progress: viewModel.downloadProgress, step: viewModel.downloadStep)
-
+            SavingProgressView(progress: viewModel.downloadProgress, step: viewModel.downloadStep)
         case .saveFailed(let message, let progress):
-            DownloadFailedState(
+            DownloadFailedView(
                 message: message,
                 progress: progress,
-                onContinue: { viewModel.continuePrimaryDownload() },
-                onRestart: { viewModel.restartPrimaryDownload() }
+                onRestart: viewModel.restartPrimaryDownload,
+                onContinue: viewModel.continuePrimaryDownload
             )
-
         default:
             VStack(spacing: 0) {
-                GroupingFilmStrip(selected: viewModel.groupingMode) {
-                    viewModel.setGroupingMode($0)
-                }
-                grid
+                groupingPicker
+                biblesList
             }
         }
     }
 
-    private enum GridLine: Identifiable {
-        case header(GridEntry, key: String, title: String, total: Int)
-        case filter(GridEntry, continentKey: String, options: [FilterOption], selected: String)
-        case items([GridEntry])
-        case solo(GridEntry)
-
-        var id: String {
-            switch self {
-            case .header(let entry, _, _, _): return entry.id
-            case .filter(let entry, _, _, _): return entry.id
-            case .items(let entries): return entries.first?.id ?? "items"
-            case .solo(let entry): return entry.id
+    private var groupingPicker: some View {
+        Picker("Group by", selection: Binding(
+            get: { viewModel.groupingMode },
+            set: viewModel.setGroupingMode
+        )) {
+            ForEach(GroupingMode.allCases) { mode in
+                Text(mode.label).tag(mode)
             }
         }
+        .pickerStyle(.segmented)
+        .padding(.horizontal)
+        .padding(.vertical, 8)
     }
 
-    private func gridLines(from entries: [GridEntry]) -> [GridLine] {
-        var lines: [GridLine] = []
-        var pending: [GridEntry] = []
-
-        func flush() {
-            var index = 0
-            while index < pending.count {
-                lines.append(.items(Array(pending[index..<min(index + 2, pending.count)])))
-                index += 2
-            }
-            pending.removeAll()
-        }
-
-        for entry in entries {
-            switch entry {
-            case .header(let key, let title, let total):
-                flush()
-                lines.append(.header(entry, key: key, title: title, total: total))
-            case .countryFilterStrip(_, let continentKey, let options, let selected):
-                flush()
-                lines.append(.filter(entry, continentKey: continentKey, options: options, selected: selected))
-            case .item(_, _, let solo):
-                if solo {
-                    flush()
-                    lines.append(.solo(entry))
-                } else {
-                    pending.append(entry)
-                }
-            }
-        }
-        flush()
-        return lines
-    }
-
-    private var grid: some View {
+    private var biblesList: some View {
         let entries = buildGridEntries(
             bibles: viewModel.bibles,
             mode: viewModel.groupingMode,
@@ -186,75 +91,111 @@ struct SelectionView: View {
             countryFilters: countryFilters
         )
 
-        return ScrollView {
-            LazyVStack(spacing: 0) {
-                ForEach(gridLines(from: entries)) { line in
-                    lineView(line)
-                }
-            }
-            .padding(2)
-        }
-    }
-
-    @ViewBuilder
-    private func lineView(_ line: GridLine) -> some View {
-        switch line {
-        case .header(_, let key, let title, let total):
-            let isExpanded = expandedGroups[key] ?? true
-            GroupHeader(title: title, totalInGroup: total, expanded: isExpanded) {
-                expandedGroups[key] = !isExpanded
-            }
-
-        case .filter(_, let continentKey, let options, let selected):
-            FilterChipStrip(options: options, selected: selected) { country in
-                countryFilters[continentKey] = country
-            }
-
-        case .solo(let entry):
-            card(for: entry)
-
-        case .items(let entries):
-            HStack(alignment: .top, spacing: 0) {
-                card(for: entries[0])
-                if entries.count > 1 {
-                    card(for: entries[1])
-                } else {
-                    Color.clear.frame(maxWidth: .infinity)
+        return List {
+            ForEach(SelectionSection.make(from: entries)) { section in
+                Section {
+                    if let filter = section.filter { countryPicker(filter) }
+                    ForEach(section.items, id: \.data.abbreviation) { bible in
+                        BibleRow(
+                            bible: bible.data,
+                            isSelected: bible.isSelected,
+                            isDisabled: !bible.isSelected && viewModel.selectedCount >= viewModel.maxSelections
+                        ) {
+                            viewModel.toggleSelection(bible.data.abbreviation)
+                        }
+                    }
+                } header: {
+                    if let header = section.header { groupHeader(header) }
                 }
             }
         }
+        .listStyle(.insetGrouped)
     }
 
-    @ViewBuilder
-    private func card(for entry: GridEntry) -> some View {
-        if case .item(_, let bible, _) = entry {
-            BibleListItem(
-                name: bible.data.name,
-                description: bible.data.description,
-                abbreviation: bible.data.abbreviation,
-                language: bible.data.language.name,
-                isSelected: bible.isSelected,
-                isDisabled: !bible.isSelected && viewModel.selectedCount >= viewModel.maxSelections,
-                onClick: { viewModel.toggleSelection(bible.data.abbreviation) }
-            )
-            .padding(2)
-        }
-    }
+    private func groupHeader(_ header: SelectionSection.Header) -> some View {
+        let isExpanded = expandedGroups[header.key] ?? true
 
-    private var cancelButton: some View {
-        Button {
-            if let onCancel { onCancel() } else { dismiss() }
+        return Button {
+            withAnimation { expandedGroups[header.key] = !isExpanded }
         } label: {
-            Image(systemName: "xmark")
-                .font(.system(size: 20, weight: .medium))
-                .foregroundStyle(AppColors.onPrimaryContainer)
-                .frame(width: 56, height: 56)
-                .background(RoundedRectangle(cornerRadius: 16).fill(AppColors.primaryContainer))
-                .shadow(color: .black.opacity(0.25), radius: 6, x: 0, y: 3)
+            HStack {
+                Text(header.title).font(.headline).foregroundStyle(.primary)
+                Text(header.total == 1 ? "1 bible" : "\(header.total) bibles")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+            .textCase(nil)
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Cancel selection")
-        .padding(16)
+    }
+
+    private func countryPicker(_ filter: SelectionSection.CountryFilter) -> some View {
+        Picker("Country", selection: Binding(
+            get: { filter.selected },
+            set: { countryFilters[filter.continentKey] = $0 }
+        )) {
+            ForEach(filter.options, id: \.name) { option in
+                Text("\(option.name) (\(option.count))").tag(option.name)
+            }
+        }
+        .pickerStyle(.menu)
+    }
+
+    // MARK: Chrome
+
+    private var showsChrome: Bool {
+        switch viewModel.uiState {
+        case .saving, .saveFailed: return false
+        default: return true
+        }
+    }
+
+    @ToolbarContentBuilder
+    private var toolbar: some ToolbarContent {
+        ToolbarItem(placement: .cancellationAction) {
+            if !viewModel.isFirstInstall && showsChrome {
+                Button("Cancel") { if let onCancel { onCancel() } else { dismiss() } }
+            }
+        }
+
+        ToolbarItem(placement: .principal) {
+            VStack(spacing: 0) {
+                Text("Choose Bibles").font(.headline)
+                if showsChrome {
+                    Text("\(viewModel.selectedCount) of \(viewModel.maxSelections) selected")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+
+        ToolbarItemGroup(placement: .primaryAction) {
+            if showsChrome {
+                Button { viewModel.fetchBibles() } label: { Image(systemName: "arrow.clockwise") }
+                    .accessibilityLabel("Refresh")
+                Button { showThemes = true } label: { Image(systemName: "circle.lefthalf.filled") }
+                    .accessibilityLabel("Theme")
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var continueBar: some View {
+        if case .loaded = viewModel.uiState {
+            Button {
+                if viewModel.isFirstInstall { viewModel.saveSelectionAndDownload() } else { viewModel.saveSelectionInBackground() }
+            } label: {
+                Text("Continue").frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .disabled(!viewModel.canProceed)
+            .padding()
+            .background(.bar)
+        }
     }
 }
 

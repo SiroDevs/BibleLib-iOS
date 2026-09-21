@@ -30,7 +30,7 @@ struct NotesView: View {
                     .overlay(alignment: .topLeading) {
                         if viewModel.noteText.isEmpty {
                             Text("Write your thoughts on this verse...")
-                                .foregroundStyle(.tertiary)
+                                .foregroundStyle(Color(.tertiaryLabel))
                                 .padding(.top, 8)
                                 .padding(.leading, 5)
                                 .allowsHitTesting(false)

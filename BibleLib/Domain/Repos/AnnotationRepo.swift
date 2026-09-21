@@ -2,7 +2,7 @@
 //  AnnotationRepo.swift
 //  BibleLib
 //
-//  Bookmarks and notes (Android: AnnotationRepo).
+//  Created by @sirodevs on 20/09/2026.
 //
 
 import Foundation
@@ -14,7 +14,6 @@ final class AnnotationRepo {
         self.data = data
     }
 
-    /// verseId -> colorHex ("" = quick bookmark without a color).
     func bookmarks(abbr: String, chapterId: String) -> [String: String] {
         data.bookmarks(abbr: abbr, chapterId: chapterId)
     }

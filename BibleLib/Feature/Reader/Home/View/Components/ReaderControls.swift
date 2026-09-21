@@ -63,7 +63,7 @@ struct ChapterEdgeRow: View {
                     .font(.caption2)
             }
         }
-        .foregroundStyle(.tertiary)
+        .foregroundStyle(Color(.tertiaryLabel))
         .frame(maxWidth: .infinity, minHeight: 72)
         .animation(.easeInOut(duration: 0.2), value: isTransitioning)
         .onAppear { isVisible = true }

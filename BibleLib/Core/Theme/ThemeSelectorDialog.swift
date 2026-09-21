@@ -31,7 +31,7 @@ struct ThemeSelectorDialog: View {
 
             VStack(alignment: .leading, spacing: 0) {
                 Text("Choose Theme")
-                    .textStyle(.headlineSmall)
+//                    .textStyle(.headlineSmall)
                     .foregroundStyle(AppColors.onSurface)
                     .padding(.bottom, 16)
 
@@ -46,20 +46,20 @@ struct ThemeSelectorDialog: View {
                     Spacer(minLength: 0)
 
                     Button("Cancel", action: onDismiss)
-                        .buttonStyle(.appText)
+//                        .buttonStyle(.appText)
 
                     Button("OKAY") {
                         onThemeSelected(selectedTheme)
                         onDismiss()
                     }
-                    .buttonStyle(.appText)
+//                    .buttonStyle(.appText)
                 }
             }
             .padding(24)
             .frame(width: 280)
             .background(
                 RoundedRectangle(cornerRadius: 28)
-                    .fill(AppColors.surfaceContainerHigh)
+//                    .fill(AppColors.surfaceContainerHigh)
             )
         }
         .accessibilityAddTraits(.isModal)
@@ -76,7 +76,7 @@ struct ThemeSelectorDialog: View {
                     .frame(width: 48, height: 48)
 
                 Text(mode.displayName)
-                    .textStyle(.bodyMedium)
+//                    .textStyle(.bodyMedium)
                     .foregroundStyle(AppColors.onSurfaceVariant)
                     .padding(.leading, 8)
 
@@ -89,7 +89,6 @@ struct ThemeSelectorDialog: View {
     }
 }
 
-/// Material RadioButton: 20pt ring, 10pt dot when selected.
 private struct RadioIndicator: View {
     let isSelected: Bool
 

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import UIKit
 
 enum AppColors {
     static let primary = Color("primary1")
@@ -46,15 +45,4 @@ enum AppColors {
 
     static let scrim = Color("scrim")
     static let shadow = Color("shadow")
-
-    /// Android's `lightColorScheme(...)` / `darkColorScheme(...)` don't override
-    /// the surface-container roles, so Compose falls back to the Material 3
-    /// baseline values. Material's AlertDialog paints itself with
-    /// `surfaceContainerHigh`, so the theme dialog needs the same fallback to
-    /// look identical.
-    static let surfaceContainerHigh = Color(UIColor { traits in
-        traits.userInterfaceStyle == .dark
-            ? UIColor(red: 0x2B / 255, green: 0x29 / 255, blue: 0x30 / 255, alpha: 1)
-            : UIColor(red: 0xEC / 255, green: 0xE6 / 255, blue: 0xF0 / 255, alpha: 1)
-    })
 }

@@ -2,56 +2,34 @@
 //  AppearanceSettingsView.swift
 //  BibleLib
 //
-//  Created by @sirodevs on 20/09/2026.
+//  Created by @sirodevs on 21/09/2026.
 //
 
 import SwiftUI
 
 struct AppearanceSettingsView: View {
-    @StateObject private var viewModel = DiContainer.shared.resolve(SettingsViewModel.self)
     @EnvironmentObject private var themeManager: ThemeManager
+    @AppStorage(PrefConstants.readerBackground) private var backgroundId = "default"
 
     var body: some View {
         Form {
             Section("Theme") {
-                Picker("Theme", selection: Binding(
-                    get: { themeManager.selectedTheme },
-                    set: { themeManager.selectedTheme = $0 }
-                )) {
-                    Text("System").tag(AppThemeMode.system)
-                    Text("Light").tag(AppThemeMode.light)
-                    Text("Dark").tag(AppThemeMode.dark)
+                Picker("Theme", selection: $themeManager.selectedTheme) {
+                    ForEach(AppThemeMode.allCases) { mode in
+                        Text(mode.displayName).tag(mode)
+                    }
                 }
-                .pickerStyle(.segmented)
+                .pickerStyle(.inline)
                 .labelsHidden()
             }
 
             Section("Reader Background") {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 64), spacing: 16)], spacing: 16) {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 72), spacing: 16)], spacing: 16) {
                     ForEach(ReaderBackgrounds.all) { option in
                         Button {
-                            viewModel.setReaderBackground(option.id)
+                            backgroundId = option.id
                         } label: {
-                            VStack(spacing: 6) {
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(option.background)
-                                    .frame(height: 52)
-                                    .overlay {
-                                        Text("Aa")
-                                            .font(.headline)
-                                            .foregroundStyle(option.textColor)
-                                    }
-                                    .overlay {
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .strokeBorder(
-                                                viewModel.readerBackgroundId == option.id ? AppColors.primary : Color.primary.opacity(0.15),
-                                                lineWidth: viewModel.readerBackgroundId == option.id ? 3 : 1
-                                            )
-                                    }
-                                Text(option.displayName)
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                            }
+                            swatch(option)
                         }
                         .buttonStyle(.plain)
                     }
@@ -61,5 +39,23 @@ struct AppearanceSettingsView: View {
         }
         .navigationTitle("Appearance")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func swatch(_ option: ReaderBackgroundOption) -> some View {
+        let isSelected = backgroundId == option.id
+
+        return VStack(spacing: 6) {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(option.background)
+                .frame(height: 52)
+                .overlay { Text("Aa").font(.headline).foregroundStyle(option.textColor) }
+                .overlay {
+                    RoundedRectangle(cornerRadius: 12)
+                        .strokeBorder(isSelected ? AppColors.primary : Color(.separator), lineWidth: isSelected ? 3 : 1)
+                }
+            Text(option.displayName)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
     }
 }

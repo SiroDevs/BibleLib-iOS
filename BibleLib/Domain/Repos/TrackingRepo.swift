@@ -2,7 +2,7 @@
 //  TrackingRepo.swift
 //  BibleLib
 //
-//  Reading history and recent searches (Android: TrackingRepo).
+//  Created by @sirodevs on 20/09/2026.
 //
 
 import Foundation

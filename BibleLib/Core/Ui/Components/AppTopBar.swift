@@ -42,7 +42,7 @@ struct AppTopBar<Actions: View>: View {
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
-                    .textStyle(.titleLarge)
+//                    .textStyle(.titleLarge)
                     .lineLimit(titleMaxLines)
                     .truncationMode(.tail)
 

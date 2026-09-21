@@ -9,7 +9,8 @@ import SwiftUI
 
 struct HistoryView: View {
     @StateObject private var viewModel = DiContainer.shared.resolve(HistoryViewModel.self)
-    @EnvironmentObject private var router: AppRouter
+    let onOpen: (ReaderTarget) -> Void
+
     @State private var showClearConfirm = false
 
     var body: some View {
@@ -18,7 +19,7 @@ struct HistoryView: View {
                 Section(day.title) {
                     ForEach(day.entries) { entry in
                         Button {
-                            router.openReader(ReaderTarget(
+                            onOpen(ReaderTarget(
                                 bibleAbbr: entry.bibleAbbr,
                                 bookId: entry.bookId,
                                 chapterId: entry.chapterId
@@ -70,7 +71,7 @@ struct HistoryView: View {
             Spacer()
             Text(entry.readAt, style: .time)
                 .font(.caption)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(Color(.tertiaryLabel))
         }
     }
 }

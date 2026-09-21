@@ -39,8 +39,6 @@ class PrefsRepo {
         set { userDefaults.set(newValue, forKey: PrefConstants.selectedBibles) }
     }
 
-    // MARK: - Reader position (Android: lastBible… lastVerseId)
-
     var lastBible: String {
         get { userDefaults.string(forKey: PrefConstants.lastBible) ?? "" }
         set { userDefaults.set(newValue, forKey: PrefConstants.lastBible) }
@@ -66,8 +64,6 @@ class PrefsRepo {
         set { userDefaults.set(newValue, forKey: PrefConstants.lastVerseId) }
     }
 
-    // MARK: - Reading preferences
-
     var readerFontFamily: String {
         get { userDefaults.string(forKey: PrefConstants.readerFontFamily) ?? "default" }
         set { userDefaults.set(newValue, forKey: PrefConstants.readerFontFamily) }
@@ -91,7 +87,6 @@ class PrefsRepo {
         set { userDefaults.set(newValue, forKey: PrefConstants.multiBibleEnabled) }
     }
 
-    /// Secondary Bibles shown under each verse, in display order.
     var secondaryBibles: [String] {
         get { userDefaults.stringArray(forKey: PrefConstants.secondaryBibles) ?? [] }
         set { userDefaults.set(newValue, forKey: PrefConstants.secondaryBibles) }

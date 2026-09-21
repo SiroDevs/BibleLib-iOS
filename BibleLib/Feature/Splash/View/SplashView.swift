@@ -10,8 +10,7 @@ import SwiftUI
 struct SplashView: View {
     @StateObject private var viewModel: SplashViewModel = DiContainer.shared.resolve(SplashViewModel.self)
     @State private var navigateToNextScreen = false
-    @State private var finishedSelectionAbbr: String?
-    @State private var appResetTick = 0
+    @State private var readerReady = false
 
     var body: some View {
         Group {
@@ -25,29 +24,23 @@ struct SplashView: View {
         .onReceive(viewModel.$isInitialized) { initialized in
             guard initialized else { return }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                readerReady = viewModel.prefsRepo.hasCompletedSelection
                 navigateToNextScreen = true
             }
         }
         .animation(.easeInOut, value: navigateToNextScreen)
-        .animation(.easeInOut, value: finishedSelectionAbbr)
-        .onReceive(NotificationCenter.default.publisher(for: .appDataDidReset)) { _ in
-            finishedSelectionAbbr = nil
-            appResetTick += 1
-        }
-    }
-
-    /// True once Bible selection has finished (this launch or an earlier one).
-    private var showsReader: Bool {
-        _ = appResetTick // re-evaluate after "Clear All Data"
-        return finishedSelectionAbbr != nil || viewModel.prefsRepo.hasCompletedSelection
+        .animation(.easeInOut, value: readerReady)
     }
 
     @ViewBuilder
     private var destinationView: some View {
-        if showsReader {
-            MainNavigationView()
+        if readerReady {
+            NavigationStack {
+                ReaderView()
+            }
+            .environment(\.restartApp, { readerReady = false })
         } else {
-            SelectionView(onFinished: { finishedSelectionAbbr = $0 })
+            SelectionView(onFinished: { _ in readerReady = true })
         }
     }
 }

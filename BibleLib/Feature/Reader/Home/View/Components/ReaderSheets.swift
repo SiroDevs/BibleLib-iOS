@@ -135,7 +135,6 @@ struct BibleSelectorSheet: View {
     let bibles: [Bible]
     let activeAbbr: String
     let onSelect: (String) -> Void
-    let onManage: () -> Void
 
     @Environment(\.dismiss) private var dismiss
 
@@ -171,9 +170,8 @@ struct BibleSelectorSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        dismiss()
-                        onManage()
+                    NavigationLink {
+                        BiblesView()
                     } label: {
                         Label("Manage Bibles", systemImage: "books.vertical")
                     }
@@ -190,9 +188,10 @@ struct BibleSelectorSheet: View {
 // MARK: - Quick settings
 
 struct QuickSettingsSheet: View {
-    @ObservedObject var viewModel: ReaderViewModel
     @EnvironmentObject private var themeManager: ThemeManager
     @Environment(\.dismiss) private var dismiss
+    @AppStorage(PrefConstants.fontSize) private var fontSize = ReaderFontSize.standard
+    @AppStorage(PrefConstants.multiBibleEnabled) private var multiBible = true
 
     var body: some View {
         NavigationStack {
@@ -210,24 +209,17 @@ struct QuickSettingsSheet: View {
                     .labelsHidden()
                 }
 
-                Section("Font size: \(Int(viewModel.fontSize)) pt") {
+                Section("Font size: \(Int(fontSize)) pt") {
                     HStack(spacing: 12) {
                         Image(systemName: "textformat.size.smaller")
-                        Slider(
-                            value: Binding(get: { viewModel.fontSize }, set: { viewModel.setFontSize($0) }),
-                            in: ReaderFontSize.minimum...ReaderFontSize.maximum,
-                            step: 2
-                        )
+                        Slider(value: $fontSize, in: ReaderFontSize.minimum...ReaderFontSize.maximum, step: 2)
                         Image(systemName: "textformat.size.larger")
                     }
                     .foregroundStyle(.secondary)
                 }
 
                 Section {
-                    Toggle("Multi-Bible Reader", isOn: Binding(
-                        get: { viewModel.multiBibleReaderEnabled },
-                        set: { viewModel.setMultiBibleReaderEnabled($0) }
-                    ))
+                    Toggle("Multi-Bible Reader", isOn: $multiBible)
                 } footer: {
                     Text("Show your secondary Bibles under each verse.")
                 }
@@ -235,8 +227,8 @@ struct QuickSettingsSheet: View {
             .navigationTitle("Quick Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }.fontWeight(.semibold)
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
                 }
             }
         }

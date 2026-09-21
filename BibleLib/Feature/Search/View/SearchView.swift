@@ -9,7 +9,8 @@ import SwiftUI
 
 struct SearchView: View {
     @StateObject private var viewModel = DiContainer.shared.resolve(SearchViewModel.self)
-    @EnvironmentObject private var router: AppRouter
+    let onOpen: (ReaderTarget) -> Void
+
 
     private var trimmedQuery: String { viewModel.query.trimmingCharacters(in: .whitespaces) }
 
@@ -100,7 +101,7 @@ struct SearchView: View {
     }
 
     private func open(_ verse: VerseDisplay) {
-        router.openReader(ReaderTarget(
+        onOpen(ReaderTarget(
             bibleAbbr: viewModel.selectedBibleAbbr,
             bookId: verse.bookId,
             chapterId: verse.chapterId,

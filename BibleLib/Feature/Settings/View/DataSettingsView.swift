@@ -10,6 +10,7 @@ import SwiftUI
 struct DataSettingsView: View {
     @StateObject private var viewModel = DiContainer.shared.resolve(SettingsViewModel.self)
     @EnvironmentObject private var themeManager: ThemeManager
+    @Environment(\.restartApp) private var restartApp
 
     var body: some View {
         Form {
@@ -45,6 +46,7 @@ struct DataSettingsView: View {
             Button("Clear", role: .destructive) {
                 if viewModel.confirmClear() {
                     themeManager.selectedTheme = .system
+                    restartApp()
                 }
             }
             Button("Cancel", role: .cancel) { viewModel.pendingClear = nil }
@@ -61,9 +63,6 @@ struct DataSettingsView: View {
                 Label(title, systemImage: systemImage)
                     .foregroundStyle(.primary)
                 Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.tertiary)
             }
         }
     }
