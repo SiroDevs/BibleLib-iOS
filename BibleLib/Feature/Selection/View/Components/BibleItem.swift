@@ -8,8 +8,8 @@
 import SwiftUI
 
 enum BibleItemLayout {
-    case row    // single item in a group: full width
-    case grid   // 2+ items in a group: one cell of BibleGrid
+    case row
+    case grid
 }
 
 struct BibleItem: View {
@@ -35,8 +35,6 @@ struct BibleItem: View {
     }
 }
 
-/// Mirrors the Android `BibleListItem`. Row and grid share one card and one layout;
-/// the grid only reserves two lines for the name because its cells are narrower.
 struct BibleItemView: View {
     let abbreviation: String
     let name: String
@@ -53,69 +51,65 @@ struct BibleItemView: View {
         Button(action: onTap) {
             content
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .bibleCardSurface(isSelected: isSelected, isDisabled: isDisabled)
-                .scaleEffect(isSelected ? BibleMetrics.selectedScale : 1)
+                .cardSurface(isSelected: isSelected, isDisabled: isDisabled)
+                .scaleEffect(isSelected ? AppSizes.selectedScale : 1)
         }
-        // .plain: inside scrolling containers the default style dims/highlights the whole label
-        // and the card draws its own selected / disabled states.
         .buttonStyle(.plain)
         .disabled(isDisabled)
-        .animation(BibleMetrics.selectionSpring, value: isSelected)
+        .animation(AppSizes.selectionSpring, value: isSelected)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     private var content: some View {
-        HStack(spacing: BibleMetrics.spacing) {
+        HStack(spacing: AppSizes.spacing) {
             leading
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(name)
-                    .font(.subheadline.weight(.semibold))                          // titleSmall
-                    .foregroundStyle(MaterialColors.onSurface.opacity(isDisabled ? 0.4 : 1))
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColors.onSurface.opacity(isDisabled ? 0.4 : 1))
                     .multilineTextAlignment(.leading)
-                    .lineLimit(isGrid ? 2 : 1, reservesSpace: isGrid)
+                    .lineLimit(1)
                 Text(subtitle)
-                    .font(.caption)                                                // bodySmall
-                    .foregroundStyle(MaterialColors.onSurface.opacity(0.55))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.onSurface.opacity(0.55))
                     .lineLimit(1)
                 Text("\(language) Bible".uppercased())
-                    .font(.caption2)                                               // labelSmall
-                    .foregroundStyle(MaterialColors.secondary)
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.secondary)
                     .lineLimit(1)
             }
         }
     }
 
-    /// Abbreviation badge, replaced by a checkmark when selected. Both use the same
-    /// square so the text never shifts sideways when the selection changes.
     private var leading: some View {
         ZStack {
             if isSelected {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 28))
-                    .foregroundStyle(MaterialColors.primary)
+                    .foregroundStyle(AppColors.primary)
                     .transition(.scale)
             } else {
                 Text(String(abbreviation.uppercased().prefix(3)))
-                    .font(.subheadline.weight(.bold))                              // labelLarge
-                    .foregroundStyle(MaterialColors.onSurfaceVariant)
-                    .frame(width: BibleMetrics.badgeSize, height: BibleMetrics.badgeSize)
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(AppColors.onSurfaceVariant)
+                    .frame(width: AppSizes.badgeSize, height: AppSizes.badgeSize)
                     .background(
-                        MaterialColors.surfaceVariant,
-                        in: RoundedRectangle(cornerRadius: BibleMetrics.cornerRadius)
+                        AppColors.surfaceVariant,
+                        in: RoundedRectangle(cornerRadius: AppSizes.cornerRadius)
                     )
                     .transition(.scale)
             }
         }
-        .frame(width: BibleMetrics.badgeSize, height: BibleMetrics.badgeSize)
+        .frame(width: AppSizes.badgeSize, height: AppSizes.badgeSize)
     }
 }
 
 struct BibleItemPlaceholder: View {
     var body: some View {
-        HStack(spacing: BibleMetrics.spacing) {
-            RoundedRectangle(cornerRadius: BibleMetrics.cornerRadius)
-                .frame(width: BibleMetrics.badgeSize, height: BibleMetrics.badgeSize)
+        HStack(spacing: AppSizes.spacing) {
+            RoundedRectangle(cornerRadius: AppSizes.cornerRadius)
+                .frame(width: AppSizes.badgeSize, height: AppSizes.badgeSize)
             VStack(alignment: .leading, spacing: 2) {
                 Text("King James Version").font(.subheadline.weight(.semibold))
                 Text("The classic English translation").font(.caption)
@@ -125,6 +119,6 @@ struct BibleItemPlaceholder: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .redacted(reason: .placeholder)
-        .bibleCardSurface()
+        .cardSurface()
     }
 }

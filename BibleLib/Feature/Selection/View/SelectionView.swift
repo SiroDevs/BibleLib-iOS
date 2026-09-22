@@ -18,6 +18,7 @@ struct SelectionView: View {
     @State private var showThemes = false
     @State private var expandedGroups: [String: Bool] = [:]
     @State private var countryFilters: [String: String] = [:]
+    @Namespace private var groupingGlassNamespace
 
     init(onFinished: @escaping (String) -> Void = { _ in }, onCancel: (() -> Void)? = nil) {
         self.onFinished = onFinished
@@ -28,13 +29,13 @@ struct SelectionView: View {
         NavigationStack {
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(MaterialColors.background)
+                .background(AppColors.background)
                 .navigationTitle("BibleLib: Multi-Bible Reader")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar { toolbar }
                 .toolbar(showsContinueBar ? .visible : .hidden, for: .bottomBar)
         }
-        .tint(MaterialColors.primary)
+        .tint(AppColors.primary)
         .sheet(isPresented: $showThemes) { ThemeSelectorSheet() }
         .task { viewModel.fetchBibles() }
         .onChange(of: viewModel.uiState) { state in
@@ -47,10 +48,10 @@ struct SelectionView: View {
         switch viewModel.uiState {
         case .loading:
             ScrollView {
-                BibleGrid {
+                AppGrid {
                     ForEach(0..<12, id: \.self) { _ in BibleItemPlaceholder() }
                 }
-                .padding(BibleMetrics.screenPadding)
+                .padding(AppSizes.screenPadding)
             }
             .scrollDisabled(true)
         case .error(let message):
@@ -73,21 +74,36 @@ struct SelectionView: View {
     }
 
     private var groupingPicker: some View {
-        Picker("Group by", selection: Binding(
-            get: { viewModel.groupingMode },
-            set: viewModel.setGroupingMode
-        )) {
-            ForEach(GroupingMode.allCases) { mode in
-                Text(mode.label).tag(mode)
-            }
-        }
-        .pickerStyle(.segmented)
-        .padding(.horizontal, BibleMetrics.screenPadding)
-        .padding(.vertical, 4)
+        groupingChips
+            .padding(.horizontal, AppSizes.screenPadding)
+            .padding(.vertical, 4)
     }
 
-    // ScrollView + LazyVStack instead of List: a List (insetGrouped) adds wide side margins and,
-    // on iPad, a readable-width cap, which is what limited the grid to two columns.
+    @ViewBuilder
+    private var groupingChips: some View {
+        if #available(iOS 26.0, *) {
+            GlassEffectContainer(spacing: 8) { groupingChipRow }
+        } else {
+            groupingChipRow
+        }
+    }
+
+    private var groupingChipRow: some View {
+        HStack(spacing: 8) {
+            ForEach(GroupingMode.allCases) { mode in
+                FilterChip(
+                    label: mode.label,
+                    isSelected: viewModel.groupingMode == mode,
+                    fillsWidth: true,
+                    id: mode,
+                    namespace: groupingGlassNamespace
+                ) {
+                    viewModel.setGroupingMode(mode)
+                }
+            }
+        }
+    }
+
     private var biblesList: some View {
         let entries = buildGridEntries(
             bibles: viewModel.bibles,
@@ -100,12 +116,15 @@ struct SelectionView: View {
             LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
                 ForEach(SelectionSection.make(from: entries)) { section in
                     Section {
-                        VStack(spacing: BibleMetrics.gap) {
-                            if let filter = section.filter { countryPicker(filter) }
+                        VStack(alignment: .leading, spacing: AppSizes.gap) {
+                            if let filter = section.filter {
+                                CountryFilterStrip(filter: filter) { countryFilters[filter.continentKey] = $0 }
+                            }
                             sectionItems(section)
                         }
-                        .padding(.horizontal, BibleMetrics.screenPadding)
-                        .padding(.bottom, BibleMetrics.gap)
+                        .padding(.horizontal, AppSizes.screenPadding)
+                        .padding(.top, AppSizes.gap)
+                        .padding(.bottom, AppSizes.gap)
                     } header: {
                         if let header = section.header { groupHeader(header) }
                     }
@@ -114,11 +133,10 @@ struct SelectionView: View {
         }
     }
 
-    /// 2+ items in a group -> fluid grid; exactly 1 item -> a normal row.
     @ViewBuilder
     private func sectionItems(_ section: SelectionSection) -> some View {
         if section.usesGrid {
-            BibleGrid {
+            AppGrid {
                 ForEach(section.items, id: \.data.abbreviation) { bible in
                     bibleItem(bible, layout: .grid)
                 }
@@ -157,26 +175,14 @@ struct SelectionView: View {
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.secondary)
             }
-            .padding(.horizontal, BibleMetrics.screenPadding)
-            .padding(.vertical, 6)
+            .padding(.horizontal, AppSizes.screenPadding)
+            .padding(.vertical, 12)
             .frame(maxWidth: .infinity)
-            .background(MaterialColors.background)   // solid, so pinned headers hide the cards under them
+            .background(AppColors.surfaceVariant, in: RoundedRectangle(cornerRadius: AppSizes.cornerRadius))
+            .padding(.horizontal, AppSizes.screenPadding)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-    }
-
-    private func countryPicker(_ filter: SelectionSection.CountryFilter) -> some View {
-        Picker("Country", selection: Binding(
-            get: { filter.selected },
-            set: { countryFilters[filter.continentKey] = $0 }
-        )) {
-            ForEach(filter.options, id: \.name) { option in
-                Text("\(option.name) (\(option.count))").tag(option.name)
-            }
-        }
-        .pickerStyle(.menu)
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var showsChrome: Bool {
@@ -232,9 +238,4 @@ struct SelectionView: View {
             }
         }
     }
-}
-
-#Preview {
-    SelectionView()
-        .environmentObject(ThemeManager())
 }
