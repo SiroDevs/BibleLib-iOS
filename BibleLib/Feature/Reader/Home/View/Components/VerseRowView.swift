@@ -2,14 +2,11 @@
 //  VerseRowView.swift
 //  BibleLib
 //
-//  One verse in the reader: number, text (with search-term highlight, bookmark and
-//  note markers) and, underneath, the same verse from each secondary Bible.
-//  Swipe and long-press gestures are attached by the list that hosts it.
+//  Created by @sirodevs on 21/09/2026.
 //
 
 import SwiftUI
 
-/// A secondary Bible's rendering of a verse.
 struct ParallelText: Identifiable {
     let abbr: String
     let text: String
@@ -21,14 +18,12 @@ struct VerseRowView: View {
     let font: ReaderFontOption
     let fontSize: Double
     let highlightQuery: String?
-    /// abbreviation + text for each secondary Bible, in display order.
     let parallelTexts: [ParallelText]
     let isBookmarked: Bool
     let hasNote: Bool
     let textColor: Color
     let secondaryTextColor: Color
 
-    /// Follows the user's Dynamic Type setting on top of the chosen reader size.
     @ScaledMetric(relativeTo: .body) private var typeScale: CGFloat = 1
 
     private var size: CGFloat { CGFloat(fontSize) * typeScale }
@@ -73,7 +68,7 @@ struct VerseRowView: View {
 
     private func parallelText(abbr: String, text: String) -> some View {
         (
-            Text("\(abbr.uppercased()) ")
+            Text("[\(abbr.uppercased())] ")
                 .font(font.font(size: size * 0.65, weight: .bold))
                 .foregroundColor(AppColors.secondary)
             + Text(Self.highlighted(text, query: highlightQuery, color: AppColors.secondaryContainer))
@@ -83,7 +78,6 @@ struct VerseRowView: View {
         .foregroundStyle(secondaryTextColor)
     }
 
-    /// Bolds and shades every case-insensitive occurrence of `query` inside `text`.
     static func highlighted(_ text: String, query: String?, color: Color) -> AttributedString {
         var attributed = AttributedString(text)
         guard let query, !query.trimmingCharacters(in: .whitespaces).isEmpty else { return attributed }

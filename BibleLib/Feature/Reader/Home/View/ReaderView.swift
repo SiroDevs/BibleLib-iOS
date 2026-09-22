@@ -81,8 +81,6 @@ struct ReaderView: View {
         viewModel.open(target)
     }
 
-    // MARK: Content
-
     @ViewBuilder
     private var content: some View {
         switch viewModel.uiState {
@@ -135,14 +133,14 @@ struct ReaderView: View {
         }
     }
 
-    // MARK: Toolbars
-
     @ToolbarContentBuilder
     private var navigationToolbar: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
             if selection.isSelecting {
                 Button(action: selection.clear) { Image(systemName: "xmark") }
                     .accessibilityLabel("Cancel selection")
+            } else {
+                Image(.mainIcon).resizable().frame(width: 40, height: 40)
             }
         }
 
@@ -196,14 +194,16 @@ struct ReaderView: View {
     }
 
     private var titleMenu: some View {
-        VStack(spacing: 1) {
+        VStack(spacing: 2) {
             Button { activeSheet = .bibles } label: {
                 Label("\(viewModel.activeBibleAbbr.uppercased()) · \(viewModel.activeBible?.name ?? "")", systemImage: "chevron.down")
                     .labelStyle(TrailingIconLabelStyle())
-                    .font(.caption2)
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
+            .padding(.vertical, 4)
+            .contentShape(Rectangle())
 
             Button {
                 if viewModel.isQueueActive { showBookLockedAlert = true } else { activeSheet = .books }
@@ -214,6 +214,8 @@ struct ReaderView: View {
                     .foregroundStyle(.primary)
                     .lineLimit(1)
             }
+            .padding(.vertical, 2)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -259,8 +261,6 @@ struct ReaderView: View {
             ShareLink(item: text) { Image(systemName: "square.and.arrow.up") }
         }
     }
-
-    // MARK: Sheets
 
     @ViewBuilder
     private func sheetContent(_ sheet: ReaderSheet) -> some View {

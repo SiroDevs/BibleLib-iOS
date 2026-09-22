@@ -2,15 +2,11 @@
 //  ReaderControls.swift
 //  BibleLib
 //
-//  Auto-scroll state, the chapter-edge "pull to continue" rows, the floating
-//  buttons and the scripture queue bar.
+//  Created by @sirodevs on 21/09/2026.
 //
 
 import SwiftUI
 
-// MARK: - Auto scroll
-
-/// Speed and on/off state for auto-scroll (Android: AutoScrollController).
 final class AutoScrollController: ObservableObject {
     static let minSpeed = 0.25
     static let maxSpeed = 4.0
@@ -26,10 +22,6 @@ final class AutoScrollController: ObservableObject {
     var speedLabel: String { String(format: "%.2gx", speed) }
 }
 
-// MARK: - Chapter edges
-
-/// Shown above the first / below the last verse. If it stays on screen for a
-/// moment the reader moves on to the neighbouring chapter (Android: ChapterTransition).
 struct ChapterEdgeRow: View {
     enum Edge { case previous, next }
 
@@ -81,9 +73,6 @@ struct ChapterEdgeRow: View {
     }
 }
 
-// MARK: - Floating buttons
-
-/// Scripture Opener shortcut plus a jump-to-top button (Android: ReaderFab).
 struct ReaderFloatingButtons: View {
     let isAtTop: Bool
     let onScrollToTop: () -> Void
@@ -126,7 +115,6 @@ struct ReaderFloatingButtons: View {
     }
 }
 
-/// Slow down / speed up buttons shown while auto-scroll is running.
 struct AutoScrollSpeedButtons: View {
     @ObservedObject var controller: AutoScrollController
 
@@ -153,10 +141,6 @@ struct AutoScrollSpeedButtons: View {
     }
 }
 
-// MARK: - Scripture queue
-
-/// Replaces the bottom toolbar while a scripture list is open: one chip per verse,
-/// plus options and close (Android: ScriptureQueue).
 struct ScriptureQueueBar: View {
     let items: [ScriptureItem]
     let activeItemId: Int64?
