@@ -33,11 +33,6 @@ struct ChapterEdgeRow: View {
     @State private var isVisible = false
     @State private var isTransitioning = false
 
-    private struct TaskKey: Equatable {
-        let visible: Bool
-        let armed: Bool
-    }
-
     var body: some View {
         VStack(spacing: 4) {
             if isTransitioning {
@@ -58,16 +53,20 @@ struct ChapterEdgeRow: View {
         .foregroundStyle(Color(.tertiaryLabel))
         .frame(maxWidth: .infinity, minHeight: 72)
         .animation(.easeInOut(duration: 0.2), value: isTransitioning)
-        .onAppear { isVisible = true }
+        // Only a row that *scrolls into view* while armed may fire. A row that was already on
+        // screen when the chapter loaded (e.g. the "previous chapter" row above verse 1) never
+        // triggers, otherwise every chapter change would chain into the one before it.
+        .onAppear { isVisible = isArmed }
         .onDisappear { isVisible = false }
-        .task(id: TaskKey(visible: isVisible, armed: isArmed)) {
-            guard isVisible, isArmed else {
+        .onChange(of: isArmed) { armed in if !armed { isVisible = false } }
+        .task(id: isVisible) {
+            guard isVisible else {
                 isTransitioning = false
                 return
             }
             isTransitioning = true
             try? await Task.sleep(nanoseconds: 550_000_000)
-            if !Task.isCancelled { onTrigger() }
+            if !Task.isCancelled && isArmed { onTrigger() }
         }
         .accessibilityLabel(edge == .previous ? "Previous chapter, \(label)" : "Next chapter, \(label)")
     }

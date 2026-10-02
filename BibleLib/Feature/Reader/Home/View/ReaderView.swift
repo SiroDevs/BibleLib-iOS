@@ -8,10 +8,13 @@
 import SwiftUI
 
 private enum ReaderSheet: String, Identifiable {
-    case books, chapters, bibles, quickSettings
-    case search, history, bookmarks, lists, opener
+    case books, chapters, quickSettings, search
 
     var id: String { rawValue }
+}
+
+private enum ReaderRoute: Hashable {
+    case bibles, bookmarks, history, lists, opener
 }
 
 struct ReaderView: View {
@@ -21,6 +24,7 @@ struct ReaderView: View {
 
     @State private var activeSheet: ReaderSheet?
     @State private var showSettings = false
+    @State private var route: ReaderRoute?
     @State private var showBookLockedAlert = false
     @State private var isAtTop = true
     @State private var scrollToTopTick = 0
@@ -44,6 +48,8 @@ struct ReaderView: View {
             .toolbar { bottomToolbar }
             .toolbar(viewModel.isQueueActive || selection.isSelecting ? .hidden : .visible, for: .bottomBar)
             .navigationDestination(isPresented: $showSettings) { SettingsView() }
+            .navigationDestination(isPresented: routeBinding) { routeContent }
+            .onChange(of: route) { if $0 == nil { viewModel.refresh() } }
             .sheet(item: $activeSheet, onDismiss: viewModel.refresh) { sheet in
                 sheetContent(sheet)
             }
@@ -76,9 +82,32 @@ struct ReaderView: View {
         Binding(get: { selection.notesRequest }, set: { selection.notesRequest = $0 })
     }
 
+    private var routeBinding: Binding<Bool> {
+        Binding(get: { route != nil }, set: { if !$0 { route = nil } })
+    }
+
     private func open(_ target: ReaderTarget) {
         activeSheet = nil
+        route = nil
         viewModel.open(target)
+    }
+
+    @ViewBuilder
+    private var routeContent: some View {
+        switch route {
+        case .bibles:
+            BiblesView()
+        case .bookmarks:
+            BookmarkNotesView(onOpen: open)
+        case .history:
+            HistoryView(onOpen: open)
+        case .lists:
+            ScriptureListsView(onOpen: open)
+        case .opener:
+            ScriptureOpenerView(bibleAbbr: viewModel.activeBibleAbbr, bibleName: viewModel.activeBible?.name ?? "", onOpen: open)
+        case nil:
+            EmptyView()
+        }
     }
 
     @ViewBuilder
@@ -107,7 +136,7 @@ struct ReaderView: View {
             ReaderFloatingButtons(
                 isAtTop: isAtTop,
                 onScrollToTop: { scrollToTopTick += 1 },
-                onOpenScriptureOpener: { activeSheet = .opener }
+                onOpenScriptureOpener: { route = .opener }
             )
             .padding(16)
         }
@@ -195,7 +224,7 @@ struct ReaderView: View {
 
     private var titleMenu: some View {
         VStack(spacing: 2) {
-            Button { activeSheet = .bibles } label: {
+            Button { route = .bibles } label: {
                 Label("\(viewModel.activeBibleAbbr.uppercased()) · \(viewModel.activeBible?.name ?? "")", systemImage: "chevron.down")
                     .labelStyle(TrailingIconLabelStyle())
                     .font(.subheadline)
@@ -222,9 +251,9 @@ struct ReaderView: View {
 
     private var moreMenu: some View {
         Menu {
-            Button { activeSheet = .lists } label: { Label("Scripture Lists", systemImage: "list.bullet.rectangle") }
-            Button { activeSheet = .bookmarks } label: { Label("Bookmarks & Notes", systemImage: "bookmark") }
-            Button { activeSheet = .history } label: { Label("History", systemImage: "clock.arrow.circlepath") }
+            Button { route = .lists } label: { Label("Scripture Lists", systemImage: "list.bullet.rectangle") }
+            Button { route = .bookmarks } label: { Label("Bookmarks & Notes", systemImage: "bookmark") }
+            Button { route = .history } label: { Label("History", systemImage: "clock.arrow.circlepath") }
 
             if let context = viewModel.context, let text = ReaderShareText.chapter(context, bible: viewModel.activeBible) {
                 ShareLink(item: text) { Label("Share Chapter", systemImage: "square.and.arrow.up") }
@@ -269,22 +298,10 @@ struct ReaderView: View {
             BookPickerSheet(books: viewModel.books, activeBookId: viewModel.activeBook?.id, onSelect: { viewModel.select($0) })
         case .chapters:
             ChapterPickerSheet(chapters: viewModel.chapters, activeChapterId: viewModel.activeChapter?.id, onSelect: { viewModel.select($0) })
-        case .bibles:
-            BibleSelectorSheet(bibles: viewModel.bibles, activeAbbr: viewModel.activeBibleAbbr, onSelect: viewModel.setPrimary)
         case .quickSettings:
             QuickSettingsSheet()
         case .search:
             ModalNavigation { SearchView(onOpen: open) }
-        case .history:
-            ModalNavigation { HistoryView(onOpen: open) }
-        case .bookmarks:
-            ModalNavigation { BookmarkNotesView(onOpen: open) }
-        case .lists:
-            ModalNavigation { ScriptureListsView(onOpen: open) }
-        case .opener:
-            ModalNavigation {
-                ScriptureOpenerView(bibleAbbr: viewModel.activeBibleAbbr, bibleName: viewModel.activeBible?.name ?? "", onOpen: open)
-            }
         }
     }
 }

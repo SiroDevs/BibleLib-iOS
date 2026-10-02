@@ -18,11 +18,13 @@ struct VerseListView: View {
     @AppStorage(PrefConstants.readerBackground) private var backgroundId = "default"
 
     @State private var visibleIndices: Set<Int> = []
-    @State private var edgesArmed = false
+    @State private var armedChapterId: String?
     @State private var highlightQuery: String?
     @State private var positionTask: Task<Void, Never>?
 
     private var selection: VerseSelectionModel { viewModel.selection }
+    // Armed only for the chapter that finished settling, so a chapter change disarms instantly.
+    private var edgesArmed: Bool { armedChapterId != nil && armedChapterId == viewModel.activeChapter?.id }
     private var page: ReaderBackgroundOption { ReaderBackgrounds.byId(backgroundId) }
 
     private struct AutoScrollKey: Equatable {
@@ -49,11 +51,11 @@ struct VerseListView: View {
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .task(id: viewModel.activeChapter?.id) {
-                edgesArmed = false
+                let chapterId = viewModel.activeChapter?.id
                 visibleIndices = []
                 if viewModel.scrollTarget == nil { highlightQuery = nil }
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
-                if !Task.isCancelled { edgesArmed = true }
+                if !Task.isCancelled { armedChapterId = chapterId }
             }
             .task(id: viewModel.scrollTarget) {
                 guard let target = viewModel.scrollTarget else { return }
@@ -79,6 +81,7 @@ struct VerseListView: View {
 
     private func edgeRow(_ edge: ChapterEdgeRow.Edge, label: String, action: @escaping () -> Void) -> some View {
         ChapterEdgeRow(edge: edge, label: label, isArmed: edgesArmed, onTrigger: action)
+            .id("\(edge)-\(viewModel.activeChapter?.id ?? "")")
             .listRowSeparator(.hidden)
             .listRowBackground(Color.clear)
     }

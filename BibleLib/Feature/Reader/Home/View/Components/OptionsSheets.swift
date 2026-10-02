@@ -47,8 +47,9 @@ struct QuickSettingsSheet: View {
             .navigationTitle("Quick Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button { dismiss() } label: { Image(systemName: "xmark") }
+                        .accessibilityLabel("Close")
                 }
             }
         }
@@ -81,8 +82,9 @@ struct HighlightColorSheet: View {
             .navigationTitle("Choose a highlight color")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Cancel", action: onCancel)
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(action: onCancel) { Image(systemName: "xmark") }
+                        .accessibilityLabel("Close")
                 }
             }
         }

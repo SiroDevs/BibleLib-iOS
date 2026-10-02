@@ -262,8 +262,9 @@ struct BiblesView: View {
             .navigationTitle("Choose primary Bible")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Close") { showPrimaryPicker = false }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button { showPrimaryPicker = false } label: { Image(systemName: "xmark") }
+                        .accessibilityLabel("Close")
                 }
             }
         }

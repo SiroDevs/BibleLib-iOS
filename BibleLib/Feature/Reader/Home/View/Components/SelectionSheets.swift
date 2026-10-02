@@ -72,8 +72,9 @@ struct BookPickerSheet: View {
             .navigationTitle("Books")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button { dismiss() } label: { Image(systemName: "xmark") }
+                        .accessibilityLabel("Close")
                 }
             }
         }
@@ -115,62 +116,9 @@ struct ChapterPickerSheet: View {
             .navigationTitle("Jump to a Chapter")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
-                }
-            }
-        }
-        .presentationDetents([.medium, .large])
-    }
-}
-
-struct BibleSelectorSheet: View {
-    let bibles: [Bible]
-    let activeAbbr: String
-    let onSelect: (String) -> Void
-
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationStack {
-            List(bibles.filter(\.isDownloaded)) { bible in
-                Button {
-                    onSelect(bible.abbreviation)
-                    dismiss()
-                } label: {
-                    HStack(spacing: 12) {
-                        Text(String(bible.abbreviation.uppercased().prefix(3)))
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.white)
-                            .frame(width: 44, height: 44)
-                            .background(AppColors.primary, in: Circle())
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(bible.name).foregroundStyle(.primary)
-                            Text("\(bible.languageName.uppercased()) · \(bible.description)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(1)
-                        }
-                        Spacer()
-                        if bible.abbreviation == activeAbbr {
-                            Image(systemName: "checkmark").foregroundStyle(AppColors.primary)
-                        }
-                    }
-                }
-            }
-            .navigationTitle("Primary Bible")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink {
-                        BiblesView()
-                    } label: {
-                        Label("Manage Bibles", systemImage: "books.vertical")
-                    }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button { dismiss() } label: { Image(systemName: "xmark") }
+                        .accessibilityLabel("Close")
                 }
             }
         }
