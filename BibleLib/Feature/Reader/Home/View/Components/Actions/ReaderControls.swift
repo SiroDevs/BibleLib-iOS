@@ -53,9 +53,6 @@ struct ChapterEdgeRow: View {
         .foregroundStyle(Color(.tertiaryLabel))
         .frame(maxWidth: .infinity, minHeight: 72)
         .animation(.easeInOut(duration: 0.2), value: isTransitioning)
-        // Only a row that *scrolls into view* while armed may fire. A row that was already on
-        // screen when the chapter loaded (e.g. the "previous chapter" row above verse 1) never
-        // triggers, otherwise every chapter change would chain into the one before it.
         .onAppear { isVisible = isArmed }
         .onDisappear { isVisible = false }
         .onChange(of: isArmed) { armed in if !armed { isVisible = false } }
@@ -137,63 +134,5 @@ struct AutoScrollSpeedButtons: View {
         .buttonStyle(.plain)
         .background(.regularMaterial, in: Capsule())
         .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
-    }
-}
-
-struct ScriptureQueueBar: View {
-    let items: [ScriptureItem]
-    let activeItemId: Int64?
-    let onSelect: (ScriptureItem) -> Void
-    let onOptions: () -> Void
-    let onClose: () -> Void
-
-    var body: some View {
-        HStack(spacing: 4) {
-            ScrollViewReader { proxy in
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(items) { item in
-                            chip(for: item).id(item.id)
-                        }
-                    }
-                    .padding(.leading, 12)
-                    .padding(.trailing, 4)
-                }
-                .onChange(of: activeItemId) { id in
-                    guard let id else { return }
-                    withAnimation { proxy.scrollTo(id, anchor: .center) }
-                }
-            }
-
-            Button(action: onOptions) {
-                Image(systemName: "slider.horizontal.3")
-                    .frame(width: 40, height: 40)
-            }
-            .accessibilityLabel("Options")
-
-            Button(action: onClose) {
-                Image(systemName: "xmark.circle.fill")
-                    .foregroundStyle(.secondary)
-                    .frame(width: 40, height: 40)
-            }
-            .accessibilityLabel("Close scripture list")
-        }
-        .buttonStyle(.plain)
-        .padding(.vertical, 8)
-        .background(.bar)
-    }
-
-    private func chip(for item: ScriptureItem) -> some View {
-        let isActive = item.id == activeItemId
-        return Button { onSelect(item) } label: {
-            Text("\(item.bookAbbr.uppercased()) \(item.chapterNumber):\(item.verseNumber)")
-                .font(.footnote.weight(isActive ? .bold : .regular))
-                .lineLimit(1)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
-                .foregroundStyle(isActive ? AppColors.onPrimary : .secondary)
-                .background(isActive ? AppColors.primary : Color(.secondarySystemFill), in: Capsule())
-        }
-        .buttonStyle(.plain)
     }
 }

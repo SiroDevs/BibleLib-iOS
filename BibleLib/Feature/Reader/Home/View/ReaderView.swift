@@ -7,16 +7,6 @@
 
 import SwiftUI
 
-private enum ReaderSheet: String, Identifiable {
-    case books, chapters, quickSettings, search
-
-    var id: String { rawValue }
-}
-
-private enum ReaderRoute: Hashable {
-    case bibles, bookmarks, history, lists, opener
-}
-
 struct ReaderView: View {
     @StateObject private var viewModel = DiContainer.shared.resolve(ReaderViewModel.self)
     @StateObject private var autoScroll = AutoScrollController()
@@ -44,8 +34,8 @@ struct ReaderView: View {
             .overlay(alignment: .bottomLeading) { speedButtons }
             .safeAreaInset(edge: .bottom, spacing: 0) { queueBar }
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar { navigationToolbar }
-            .toolbar { bottomToolbar }
+            .toolbar { toolbarContent }
+            .toolbar { bottomBarContent }
             .toolbar(viewModel.isQueueActive || selection.isSelecting ? .hidden : .visible, for: .bottomBar)
             .navigationDestination(isPresented: $showSettings) { SettingsView() }
             .navigationDestination(isPresented: routeBinding) { routeContent }
@@ -78,6 +68,69 @@ struct ReaderView: View {
             }
     }
 
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        if selection.isSelecting {
+            ReaderSelectionToolbar(
+                viewModel: viewModel,
+                onCancel: selection.clear,
+                onHighlight: { selection.showColorPicker = true },
+                onAddNote: selection.requestNoteForSelection,
+                onCopy: copySelectionToPasteboard,
+                shareText: selectedShareText
+            )
+        } else {
+            ReaderNormalToolbar(
+                viewModel: viewModel,
+                onTapBible: { activeSheet = .bibles },
+                onTapBook: {
+                    if viewModel.isQueueActive {
+                        showBookLockedAlert = true
+                    } else {
+                        activeSheet = .books
+                    }
+                },
+                onSearch: { route = .search },
+                moreMenu: {
+                    ReaderMoreMenu(
+                        onLists: { route = .lists },
+                        onBookmarks: { route = .bookmarks },
+                        onHistory: { route = .history },
+                        shareChapterText: shareChapterText,
+                        onSettings: { showSettings = true }
+                    )
+                }
+            )
+        }
+    }
+
+    @ToolbarContentBuilder
+    private var bottomBarContent: some ToolbarContent {
+        ReaderBottomBar(
+            viewModel: viewModel,
+            autoScroll: autoScroll,
+            onChapters: { activeSheet = .chapters },
+            onOptions: { activeSheet = .quickSettings }
+        )
+    }
+
+    private var selectedShareText: String? {
+        guard let context = viewModel.context else { return nil }
+        return ReaderShareText.verses(selection.selectedIds, in: context, bible: viewModel.activeBible)
+    }
+
+    private var shareChapterText: String? {
+        guard let context = viewModel.context else { return nil }
+        return ReaderShareText.chapter(context, bible: viewModel.activeBible)
+    }
+
+    private func copySelectionToPasteboard() {
+        guard let text = selectedShareText else { return }
+        UIPasteboard.general.string = text
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        selection.clear()
+    }
+
     private var notesBinding: Binding<NotesRequest?> {
         Binding(get: { selection.notesRequest }, set: { selection.notesRequest = $0 })
     }
@@ -95,38 +148,49 @@ struct ReaderView: View {
     @ViewBuilder
     private var routeContent: some View {
         switch route {
-        case .bibles:
-            BiblesView()
-        case .bookmarks:
-            BookmarkNotesView(onOpen: open)
-        case .history:
-            HistoryView(onOpen: open)
-        case .lists:
-            ScriptureListsView(onOpen: open)
-        case .opener:
-            ScriptureOpenerView(bibleAbbr: viewModel.activeBibleAbbr, bibleName: viewModel.activeBible?.name ?? "", onOpen: open)
-        case nil:
-            EmptyView()
+            case .bibles:
+                BiblesView()
+            case .bookmarks:
+                BookmarkNotesView(onOpen: open)
+            case .history:
+                HistoryView(onOpen: open)
+            case .search:
+                SearchView(onOpen: open)
+            case .lists:
+                ScriptureListsView(onOpen: open)
+            case .opener:
+                ScriptureOpenerView(
+                    bibleAbbr: viewModel.activeBibleAbbr,
+                    bibleName: viewModel.activeBible?.name ?? "",
+                    onOpen: open
+                )
+            case nil:
+                EmptyView()
         }
     }
 
     @ViewBuilder
     private var content: some View {
         switch viewModel.uiState {
-        case .error(let message):
-            ErrorState(message: message) { viewModel.open() }
-        case .loaded:
-            VerseListView(viewModel: viewModel, autoScroll: autoScroll, scrollToTopTick: scrollToTopTick, isAtTop: $isAtTop)
-        default:
-            List(0..<8, id: \.self) { _ in
-                Text(String(repeating: "In the beginning God created the heaven and the earth. ", count: 2))
-                    .redacted(reason: .placeholder)
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
-            }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .disabled(true)
+            case .error(let message):
+                ErrorState(message: message) { viewModel.open() }
+            case .loaded:
+                VerseListView(
+                    viewModel: viewModel,
+                    autoScroll: autoScroll,
+                    scrollToTopTick: scrollToTopTick,
+                    isAtTop: $isAtTop
+                )
+            default:
+                List(0..<8, id: \.self) { _ in
+                    Text(String(repeating: "In the beginning God created the heaven and the earth. ", count: 2))
+                        .redacted(reason: .placeholder)
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .disabled(true)
         }
     }
 
@@ -152,142 +216,10 @@ struct ReaderView: View {
     @ViewBuilder
     private var queueBar: some View {
         if viewModel.isQueueActive {
-            ScriptureQueueBar(
-                items: viewModel.queueItems,
-                activeItemId: viewModel.queueActiveItemId,
-                onSelect: viewModel.jump(to:),
-                onOptions: { activeSheet = .quickSettings },
-                onClose: viewModel.dismissQueue
+            ScriptureQueue(
+                viewModel: viewModel,
+                onOptions: { activeSheet = .quickSettings }
             )
-        }
-    }
-
-    @ToolbarContentBuilder
-    private var navigationToolbar: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarLeading) {
-            if selection.isSelecting {
-                Button(action: selection.clear) { Image(systemName: "xmark") }
-                    .accessibilityLabel("Cancel selection")
-            } else {
-                Image(.mainIcon).resizable().frame(width: 40, height: 40)
-            }
-        }
-
-        ToolbarItem(placement: .principal) {
-            if selection.isSelecting {
-                Text("\(selection.selectedIds.count) selected").font(.headline)
-            } else {
-                titleMenu
-            }
-        }
-
-        ToolbarItemGroup(placement: .navigationBarTrailing) {
-            if selection.isSelecting {
-                selectionActions
-            } else {
-                Button { activeSheet = .search } label: { Image(systemName: "magnifyingglass") }
-                    .accessibilityLabel("Search")
-                moreMenu
-            }
-        }
-    }
-
-    @ToolbarContentBuilder
-    private var bottomToolbar: some ToolbarContent {
-        ToolbarItemGroup(placement: .bottomBar) {
-            Button { autoScroll.toggle() } label: {
-                Image(systemName: autoScroll.isRunning ? "pause.fill" : "play.fill")
-            }
-            .accessibilityLabel(autoScroll.isRunning ? "Stop auto scroll" : "Start auto scroll")
-
-            Spacer()
-            Button { viewModel.navigateChapter(-1) } label: { Image(systemName: "chevron.left") }
-                .disabled(!viewModel.hasPrevChapter)
-                .accessibilityLabel("Previous chapter")
-
-            Spacer()
-            Button { activeSheet = .chapters } label: {
-                Text("Chapter \(viewModel.activeChapter?.number ?? "")").font(.subheadline.weight(.semibold))
-            }
-            .disabled(viewModel.chapters.isEmpty)
-
-            Spacer()
-            Button { viewModel.navigateChapter(1) } label: { Image(systemName: "chevron.right") }
-                .disabled(!viewModel.hasNextChapter)
-                .accessibilityLabel("Next chapter")
-
-            Spacer()
-            Button { activeSheet = .quickSettings } label: { Image(systemName: "slider.horizontal.3") }
-                .accessibilityLabel("Options")
-        }
-    }
-
-    private var titleMenu: some View {
-        VStack(spacing: 2) {
-            Button { route = .bibles } label: {
-                Label("\(viewModel.activeBibleAbbr.uppercased()) · \(viewModel.activeBible?.name ?? "")", systemImage: "chevron.down")
-                    .labelStyle(TrailingIconLabelStyle())
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
-            .padding(.vertical, 4)
-            .contentShape(Rectangle())
-
-            Button {
-                if viewModel.isQueueActive { showBookLockedAlert = true } else { activeSheet = .books }
-            } label: {
-                Label("\(viewModel.activeBook?.name ?? "") \(viewModel.activeChapter?.number ?? "")", systemImage: "chevron.down")
-                    .labelStyle(TrailingIconLabelStyle())
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
-            }
-            .padding(.vertical, 2)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var moreMenu: some View {
-        Menu {
-            Button { route = .lists } label: { Label("Scripture Lists", systemImage: "list.bullet.rectangle") }
-            Button { route = .bookmarks } label: { Label("Bookmarks & Notes", systemImage: "bookmark") }
-            Button { route = .history } label: { Label("History", systemImage: "clock.arrow.circlepath") }
-
-            if let context = viewModel.context, let text = ReaderShareText.chapter(context, bible: viewModel.activeBible) {
-                ShareLink(item: text) { Label("Share Chapter", systemImage: "square.and.arrow.up") }
-            }
-
-            Divider()
-            Button { showSettings = true } label: { Label("Settings", systemImage: "gearshape") }
-        } label: {
-            Image(systemName: "ellipsis.circle")
-        }
-        .accessibilityLabel("More")
-    }
-
-    @ViewBuilder
-    private var selectionActions: some View {
-        Button { selection.showColorPicker = true } label: { Image(systemName: "highlighter") }
-            .accessibilityLabel("Highlight and bookmark")
-
-        Button(action: selection.requestNoteForSelection) { Image(systemName: "note.text.badge.plus") }
-            .disabled(selection.selectedIds.count != 1)
-            .accessibilityLabel("Add note")
-
-        if let context = viewModel.context,
-           let text = ReaderShareText.verses(selection.selectedIds, in: context, bible: viewModel.activeBible) {
-            Button {
-                UIPasteboard.general.string = text
-                UINotificationFeedbackGenerator().notificationOccurred(.success)
-                selection.clear()
-            } label: {
-                Image(systemName: "doc.on.doc")
-            }
-            .accessibilityLabel("Copy")
-
-            ShareLink(item: text) { Image(systemName: "square.and.arrow.up") }
         }
     }
 
@@ -295,47 +227,13 @@ struct ReaderView: View {
     private func sheetContent(_ sheet: ReaderSheet) -> some View {
         switch sheet {
         case .books:
-            BookPickerSheet(books: viewModel.books, activeBookId: viewModel.activeBook?.id, onSelect: { viewModel.select($0) })
+            BookPickerSheet(viewModel: viewModel)
         case .chapters:
-            ChapterPickerSheet(chapters: viewModel.chapters, activeChapterId: viewModel.activeChapter?.id, onSelect: { viewModel.select($0) })
+            ChapterPickerSheet(viewModel: viewModel)
         case .quickSettings:
             QuickSettingsSheet()
-        case .search:
-            ModalNavigation { SearchView(onOpen: open) }
-        }
-    }
-}
-
-private struct ReaderSelectionPresentations: ViewModifier {
-    @ObservedObject var selection: VerseSelectionModel
-
-    func body(content: Content) -> some View {
-        content
-            .sheet(isPresented: $selection.showColorPicker) {
-                HighlightColorSheet(onChoose: selection.applyHighlight, onCancel: { selection.showColorPicker = false })
-            }
-            .confirmationDialog(
-                "Highlight applied",
-                isPresented: Binding(
-                    get: { selection.pendingColor != nil },
-                    set: { if !$0 { selection.pendingColor = nil } }
-                ),
-                titleVisibility: .visible
-            ) {
-                Button("Bookmark only") { selection.confirmHighlight(withNote: false) }
-                Button("Bookmark with note") { selection.confirmHighlight(withNote: true) }
-                Button("Cancel", role: .cancel) { selection.pendingColor = nil }
-            } message: {
-                Text("Save the highlighted verses as a bookmark, or add a note too.")
-            }
-    }
-}
-
-private struct TrailingIconLabelStyle: LabelStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        HStack(spacing: 4) {
-            configuration.title
-            configuration.icon.font(.system(size: 9, weight: .bold))
+        case .bibles:
+            BibleSelectorSheet(viewModel: viewModel)
         }
     }
 }

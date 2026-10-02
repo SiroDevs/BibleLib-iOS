@@ -11,7 +11,6 @@ struct SearchView: View {
     @StateObject private var viewModel = DiContainer.shared.resolve(SearchViewModel.self)
     let onOpen: (ReaderTarget) -> Void
 
-
     private var trimmedQuery: String { viewModel.query.trimmingCharacters(in: .whitespaces) }
 
     var body: some View {

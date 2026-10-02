@@ -23,7 +23,6 @@ struct VerseListView: View {
     @State private var positionTask: Task<Void, Never>?
 
     private var selection: VerseSelectionModel { viewModel.selection }
-    // Armed only for the chapter that finished settling, so a chapter change disarms instantly.
     private var edgesArmed: Bool { armedChapterId != nil && armedChapterId == viewModel.activeChapter?.id }
     private var page: ReaderBackgroundOption { ReaderBackgrounds.byId(backgroundId) }
 

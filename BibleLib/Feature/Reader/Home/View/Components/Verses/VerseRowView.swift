@@ -92,3 +92,28 @@ struct VerseRowView: View {
         return attributed
     }
 }
+
+struct ReaderSelectionPresentations: ViewModifier {
+    @ObservedObject var selection: VerseSelectionModel
+
+    func body(content: Content) -> some View {
+        content
+            .sheet(isPresented: $selection.showColorPicker) {
+                HighlightColorSheet(onChoose: selection.applyHighlight, onCancel: { selection.showColorPicker = false })
+            }
+            .confirmationDialog(
+                "Highlight applied",
+                isPresented: Binding(
+                    get: { selection.pendingColor != nil },
+                    set: { if !$0 { selection.pendingColor = nil } }
+                ),
+                titleVisibility: .visible
+            ) {
+                Button("Bookmark only") { selection.confirmHighlight(withNote: false) }
+                Button("Bookmark with note") { selection.confirmHighlight(withNote: true) }
+                Button("Cancel", role: .cancel) { selection.pendingColor = nil }
+            } message: {
+                Text("Save the highlighted verses as a bookmark, or add a note too.")
+            }
+    }
+}
