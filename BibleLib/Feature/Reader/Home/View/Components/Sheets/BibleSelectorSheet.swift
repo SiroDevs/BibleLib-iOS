@@ -40,7 +40,7 @@ struct BibleSelectorSheet: View {
                     }
                 }
             }
-            .navigationTitle("Primary Bible")
+            .navigationTitle("Switch Primary Bible")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -51,7 +51,7 @@ struct BibleSelectorSheet: View {
                     NavigationLink {
                         BiblesView()
                     } label: {
-                        Label("Manage Bibles", systemImage: "book")
+                        Text("Bibles")
                     }
                 }
             }
