@@ -22,6 +22,11 @@ struct ReaderView: View {
 
     private var selection: VerseSelectionModel { viewModel.selection }
 
+    private var canShowReviewPrompt: Bool {
+        guard case .loaded = viewModel.uiState else { return false }
+        return activeSheet == nil && route == nil && !showSettings && !selection.isSelecting
+    }
+
     private var errorMessage: String? {
         if case .error(let message) = viewModel.uiState { return message }
         return nil
@@ -33,6 +38,7 @@ struct ReaderView: View {
             .overlay(alignment: .bottomTrailing) { floatingButtons }
             .overlay(alignment: .bottomLeading) { speedButtons }
             .safeAreaInset(edge: .bottom, spacing: 0) { queueBar }
+            .reviewPrompt(isEnabled: canShowReviewPrompt)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { toolbarContent }
             .toolbar { bottomBarContent }

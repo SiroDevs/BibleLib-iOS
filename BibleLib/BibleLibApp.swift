@@ -13,6 +13,7 @@ struct BibleLibApp: App {
 
     init() {
         _ = DiContainer.shared
+        ReviewPromptManager.shared.configure()
     }
 
     var body: some Scene {
