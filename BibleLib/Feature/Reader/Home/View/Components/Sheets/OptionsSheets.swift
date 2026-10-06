@@ -38,6 +38,8 @@ struct QuickSettingsSheet: View {
                     .foregroundStyle(.secondary)
                 }
 
+                AutoScrollSpeedSection()
+
                 Section {
                     Toggle("Multi-Bible Reader", isOn: $multiBible)
                 } footer: {
@@ -53,7 +55,7 @@ struct QuickSettingsSheet: View {
                 }
             }
         }
-        .presentationDetents([.medium])
+        .presentationDetents([.medium, .large])
     }
 }
 

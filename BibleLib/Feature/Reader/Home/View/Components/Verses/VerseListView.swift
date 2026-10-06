@@ -26,12 +26,6 @@ struct VerseListView: View {
     private var edgesArmed: Bool { armedChapterId != nil && armedChapterId == viewModel.activeChapter?.id }
     private var page: ReaderBackgroundOption { ReaderBackgrounds.byId(backgroundId) }
 
-    private struct AutoScrollKey: Equatable {
-        let running: Bool
-        let speed: Double
-        let chapterId: String?
-    }
-
     var body: some View {
         ScrollViewReader { proxy in
             List {
@@ -49,10 +43,24 @@ struct VerseListView: View {
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
+            .background(ScrollViewLocator(controller: autoScroll))
+            .onAppear {
+                autoScroll.onReachedEnd = { [weak viewModel, weak autoScroll] in
+                    guard let viewModel, let autoScroll, !viewModel.hasNextChapter else { return }
+                    autoScroll.isRunning = false
+                }
+            }
             .task(id: viewModel.activeChapter?.id) {
                 let chapterId = viewModel.activeChapter?.id
                 visibleIndices = []
                 if viewModel.scrollTarget == nil { highlightQuery = nil }
+                if autoScroll.isRunning, viewModel.scrollTarget == nil {
+                    // Keep auto scroll reading from the top of the newly opened chapter.
+                    try? await Task.sleep(nanoseconds: 80_000_000)
+                    if !Task.isCancelled, let first = viewModel.verses.first {
+                        proxy.scrollTo(first.verseId, anchor: .top)
+                    }
+                }
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
                 if !Task.isCancelled { armedChapterId = chapterId }
             }
@@ -62,10 +70,6 @@ struct VerseListView: View {
                 try? await Task.sleep(nanoseconds: 80_000_000)
                 proxy.scrollTo(target.verseId, anchor: .top)
                 viewModel.scrollTarget = nil
-            }
-            .task(id: AutoScrollKey(running: autoScroll.isRunning, speed: autoScroll.speed, chapterId: viewModel.activeChapter?.id)) {
-                guard autoScroll.isRunning else { return }
-                await runAutoScroll(proxy)
             }
             .onChange(of: scrollToTopTick) { _ in
                 guard let first = viewModel.verses.first else { return }
@@ -141,21 +145,5 @@ struct VerseListView: View {
             guard !Task.isCancelled, let index = visibleIndices.min(), viewModel.verses.indices.contains(index) else { return }
             viewModel.verseViewed(viewModel.verses[index])
         }
-    }
-
-    private func runAutoScroll(_ proxy: ScrollViewProxy) async {
-        var index = visibleIndices.min() ?? 0
-
-        while !Task.isCancelled, index < viewModel.verses.count - 1 {
-            let length = max(viewModel.verses[index].text.count, 20)
-            let seconds = max(0.6, Double(length) / (80.0 * autoScroll.speed))
-            withAnimation(.linear(duration: seconds)) {
-                proxy.scrollTo(viewModel.verses[index + 1].verseId, anchor: .top)
-            }
-            try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
-            index += 1
-        }
-
-        if !Task.isCancelled && !viewModel.hasNextChapter { autoScroll.isRunning = false }
     }
 }

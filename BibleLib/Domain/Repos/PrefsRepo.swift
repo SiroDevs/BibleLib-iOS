@@ -82,6 +82,14 @@ class PrefsRepo {
         set { userDefaults.set(newValue, forKey: PrefConstants.fontSize) }
     }
 
+    var autoScrollSpeed: Double {
+        get {
+            let stored = userDefaults.object(forKey: PrefConstants.autoScrollSpeed) as? Double
+            return stored ?? AutoScrollSpeed.standard
+        }
+        set { userDefaults.set(newValue, forKey: PrefConstants.autoScrollSpeed) }
+    }
+
     var multiBibleReaderEnabled: Bool {
         get { userDefaults.object(forKey: PrefConstants.multiBibleEnabled) as? Bool ?? true }
         set { userDefaults.set(newValue, forKey: PrefConstants.multiBibleEnabled) }
@@ -126,6 +134,7 @@ class PrefsRepo {
         readerFontFamily = "default"
         readerBackground = "default"
         fontSize = ReaderFontSize.standard
+        autoScrollSpeed = AutoScrollSpeed.standard
         multiBibleReaderEnabled = true
     }
 }

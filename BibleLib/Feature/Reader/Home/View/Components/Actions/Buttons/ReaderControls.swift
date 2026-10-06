@@ -7,19 +7,59 @@
 
 import SwiftUI
 
-final class AutoScrollController: ObservableObject {
-    static let minSpeed = 0.25
-    static let maxSpeed = 4.0
-    static let step = 0.25
+final class ScrollViewLocatorView: UIView {
+    private weak var cached: UIScrollView?
 
-    @Published var isRunning = false
-    @Published var speed = 1.0
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        isUserInteractionEnabled = false
+        backgroundColor = .clear
+    }
 
-    func toggle() { isRunning.toggle() }
-    func speedUp() { speed = min(speed + Self.step, Self.maxSpeed) }
-    func speedDown() { speed = max(speed - Self.step, Self.minSpeed) }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    var speedLabel: String { String(format: "%.2gx", speed) }
+    func findScrollView() -> UIScrollView? {
+        if let cached, cached.window != nil { return cached }
+        cached = nil
+
+        var ancestor = superview
+        var depth = 0
+        while let current = ancestor, depth < 8 {
+            if let found = Self.firstScrollView(in: current) {
+                cached = found
+                return found
+            }
+            ancestor = current.superview
+            depth += 1
+        }
+        return nil
+    }
+
+    private static func firstScrollView(in root: UIView) -> UIScrollView? {
+        var queue = [root]
+        var index = 0
+        while index < queue.count {
+            let view = queue[index]
+            index += 1
+            if let scrollView = view as? UIScrollView { return scrollView }
+            queue.append(contentsOf: view.subviews)
+        }
+        return nil
+    }
+}
+
+struct ScrollViewLocator: UIViewRepresentable {
+    let controller: AutoScrollController
+
+    func makeUIView(context: Context) -> ScrollViewLocatorView {
+        let view = ScrollViewLocatorView()
+        controller.locator = view
+        return view
+    }
+
+    func updateUIView(_ uiView: ScrollViewLocatorView, context: Context) {
+        controller.locator = uiView
+    }
 }
 
 struct ChapterEdgeRow: View {
@@ -98,7 +138,7 @@ struct ReaderFloatingButtons: View {
                             .transition(.opacity)
                     }
                 }
-                .padding(.horizontal, isAtTop ? 16 : 14)
+                .padding(.horizontal, 16)
                 .frame(height: 48)
                 .foregroundStyle(AppColors.onPrimaryContainer)
                 .background(AppColors.primaryContainer, in: Capsule())
@@ -108,31 +148,5 @@ struct ReaderFloatingButtons: View {
             .accessibilityLabel("Scripture Opener")
         }
         .animation(.easeInOut(duration: 0.2), value: isAtTop)
-    }
-}
-
-struct AutoScrollSpeedButtons: View {
-    @ObservedObject var controller: AutoScrollController
-
-    var body: some View {
-        HStack(spacing: 0) {
-            Button(action: controller.speedDown) {
-                Image(systemName: "minus")
-                    .frame(width: 44, height: 40)
-            }
-            .accessibilityLabel("Slow down auto scroll")
-
-            Divider().frame(height: 20)
-
-            Button(action: controller.speedUp) {
-                Image(systemName: "plus")
-                    .frame(width: 44, height: 40)
-            }
-            .accessibilityLabel("Speed up auto scroll")
-        }
-        .font(.body.weight(.semibold))
-        .buttonStyle(.plain)
-        .background(.regularMaterial, in: Capsule())
-        .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
     }
 }

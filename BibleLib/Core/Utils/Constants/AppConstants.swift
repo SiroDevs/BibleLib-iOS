@@ -29,6 +29,7 @@ struct PrefConstants {
     static let readerFontFamily = "readerFontFamilyKey"
     static let readerBackground = "readerBackgroundKey"
     static let fontSize = "fontSizeKey"
+    static let autoScrollSpeed = "autoScrollSpeedKey"
     static let multiBibleEnabled = "multiBibleEnabledKey"
     static let secondaryBibles = "secondaryBiblesKey"
     static let hasSeenBiblesManagementTip = "hasSeenBiblesManagementTipKey"
@@ -39,6 +40,18 @@ enum ReaderFontSize {
     static let minimum: Double = 12
     static let maximum: Double = 32
     static let standard: Double = 18
+}
+
+/// Auto scroll speed multiplier range and default.
+enum AutoScrollSpeed {
+    static let minimum: Double = 0.25
+    static let maximum: Double = 4.0
+    static let step: Double = 0.25
+    static let standard: Double = 0.5
+
+    static func label(_ speed: Double) -> String {
+        "\(speed.formatted(.number.precision(.fractionLength(0...2))))x"
+    }
 }
 
 /// Secondary-Bible limits for the multi-Bible reader (Android: PrefsRepo companion).

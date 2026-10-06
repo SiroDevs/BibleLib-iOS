@@ -34,6 +34,8 @@ struct ReadingSettingsView: View {
                 .foregroundStyle(.secondary)
             }
 
+            AutoScrollSpeedSection()
+
             Section("Font") {
                 Picker("Font", selection: $fontFamily) {
                     ForEach(ReaderFonts.all) { option in
