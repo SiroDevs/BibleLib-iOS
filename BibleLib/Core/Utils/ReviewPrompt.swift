@@ -1,35 +1,18 @@
 //
 //  ReviewPrompt.swift
+//  BibleLib
 //
-//  Reusable, self-contained app review prompt. Copy this single file into any
-//  SwiftUI app (iOS 16+).
-//
-//  Setup:
-//    1. App.init():            ReviewPromptManager.shared.configure()   // starts the first-launch clock
-//    2. On your target screen: .reviewPrompt()                          // that's it
-//
-//  Flow: after `initialDelay` since first launch -> "Are you enjoying the app?" (Yes / No)
-//        -> "Review Now / Later". Review Now = StoreKit review request, never asked again.
-//        Later = wait `reminderDelay`, then the flow can appear again.
-//
+//  Created by @sirodevs on 05/10/2026.
 
 import SwiftUI
 import StoreKit
 
-// MARK: - Configuration
-
 struct ReviewPromptConfig {
-    /// Time since first launch before the prompt may appear.
     var initialDelay: TimeInterval = 48 * 60 * 60
-    /// Time to wait after the user taps "Later".
     var reminderDelay: TimeInterval = 48 * 60 * 60
-    /// Pause after the screen appears, so the dialog never pops up instantly.
     var presentationDelay: TimeInterval = 2
-    /// Change this when copying to another app if you want unique keys.
     var keyPrefix = "reviewPrompt"
 }
-
-// MARK: - Manager
 
 @MainActor
 final class ReviewPromptManager: ObservableObject {
@@ -37,20 +20,13 @@ final class ReviewPromptManager: ObservableObject {
 
     enum Step { case enjoying, review }
 
-    /// Which dialog is currently showing (nil = none).
     @Published fileprivate(set) var step: Step?
 
     private(set) var config: ReviewPromptConfig
     private let defaults: UserDefaults
 
-    /// In-memory only: guarantees the flow starts at most once per app session,
-    /// no matter how many times the screen appears or re-renders.
     private var startedThisSession = false
 
-    /// UserDefaults keys (all derived from `config.keyPrefix`).
-    ///  - firstLaunchDate : Double  (timeIntervalSince1970) written once, on first launch
-    ///  - lastDeferredDate: Double  (timeIntervalSince1970) written when user taps "Later"
-    ///  - isHandled       : Bool    true after "Review Now"; the prompt never shows again
     private enum Key: String {
         case firstLaunchDate, lastDeferredDate, isHandled
     }
@@ -63,13 +39,10 @@ final class ReviewPromptManager: ObservableObject {
         recordFirstLaunchIfNeeded()
     }
 
-    /// Call from `App.init()`. Optionally pass custom delays / key prefix.
     func configure(_ config: ReviewPromptConfig = ReviewPromptConfig()) {
         self.config = config
         recordFirstLaunchIfNeeded()
     }
-
-    // MARK: Persistence
 
     private func recordFirstLaunchIfNeeded() {
         guard defaults.object(forKey: key(.firstLaunchDate)) == nil else { return }
@@ -83,8 +56,6 @@ final class ReviewPromptManager: ObservableObject {
         return Date(timeIntervalSince1970: seconds)
     }
 
-    // MARK: Eligibility
-
     private func isEligible(now: Date = Date()) -> Bool {
         guard !isHandled, let firstLaunch = date(for: .firstLaunchDate) else { return false }
         guard now.timeIntervalSince(firstLaunch) >= config.initialDelay else { return false }
@@ -95,20 +66,15 @@ final class ReviewPromptManager: ObservableObject {
         return true
     }
 
-    /// Safe to call as often as you like; only the first eligible call per session starts the flow.
     func startIfEligible() {
         guard step == nil, !startedThisSession, isEligible() else { return }
         startedThisSession = true
         step = .enjoying
     }
 
-    // MARK: User actions
-
-    /// "Yes" or "No" – both lead to the review dialog.
     fileprivate func answerEnjoying() {
         step = nil
         Task { @MainActor in
-            // Let the first alert finish dismissing before presenting the next one.
             try? await Task.sleep(nanoseconds: 500_000_000)
             step = .review
         }
@@ -125,7 +91,6 @@ final class ReviewPromptManager: ObservableObject {
     }
 
     #if DEBUG
-    /// For testing: clears all stored state and allows the flow to start again.
     func debugReset() {
         [Key.firstLaunchDate, .lastDeferredDate, .isHandled].forEach { defaults.removeObject(forKey: key($0)) }
         startedThisSession = false
@@ -135,8 +100,6 @@ final class ReviewPromptManager: ObservableObject {
     #endif
 }
 
-// MARK: - SwiftUI integration
-
 private struct ReviewPromptModifier: ViewModifier {
     @ObservedObject private var manager = ReviewPromptManager.shared
     @Environment(\.requestReview) private var requestReview
@@ -145,7 +108,6 @@ private struct ReviewPromptModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            // Runs once per appearance / once per isEnabled change – not on every re-render.
             .task(id: isEnabled) {
                 guard isEnabled else { return }
                 try? await Task.sleep(nanoseconds: UInt64(manager.config.presentationDelay * 1_000_000_000))
@@ -166,7 +128,6 @@ private struct ReviewPromptModifier: ViewModifier {
                         manager.reviewNow()
                         Task { @MainActor in
                             try? await Task.sleep(nanoseconds: 500_000_000)
-                            // iOS decides whether to show the sheet (rate limits etc.); no result to handle.
                             requestReview()
                         }
                     }
@@ -181,8 +142,6 @@ private struct ReviewPromptModifier: ViewModifier {
 }
 
 extension View {
-    /// Attach to the screen that should host the review prompt.
-    /// - Parameter isEnabled: pass `false` while sheets, pushed screens or selections are active.
     func reviewPrompt(isEnabled: Bool = true) -> some View {
         modifier(ReviewPromptModifier(isEnabled: isEnabled))
     }

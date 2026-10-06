@@ -22,27 +22,20 @@ final class SyncScheduler {
         self.prefsRepo = prefsRepo
     }
 
-    /// Queues each Bible as its own download. A download that is already in
-    /// flight is left alone (Android: `ExistingWorkPolicy.KEEP`).
     func scheduleDownloads(_ abbrs: [String]) {
         for abbr in abbrs {
             schedule(abbr, replacingExisting: false)
         }
     }
 
-    /// Queues one Bible, replacing any download already running for it
-    /// (Android: `scheduleSecondaryDownload` / `ExistingWorkPolicy.REPLACE`).
     func scheduleDownload(_ abbr: String) {
         schedule(abbr, replacingExisting: true)
     }
 
-    /// Android's notification "Retry" action.
     func retryDownload(_ abbr: String) {
         scheduleDownload(abbr)
     }
 
-    /// Android's notification "Restart" action: throw away what was downloaded
-    /// and start over.
     func restartDownload(_ abbr: String) {
         cancelDownload(abbr)
         bibleRepo.clearBibleContent(abbr: abbr)
@@ -64,9 +57,6 @@ final class SyncScheduler {
         running.forEach { $0.task.cancel() }
     }
 
-    /// WorkManager keeps queued work across app restarts; here we re-queue any
-    /// chosen Bible that never finished. Bibles already marked failed stay failed
-    /// until the user retries them, as on Android.
     func resumeIncompleteDownloads() {
         guard prefsRepo.hasCompletedSelection else { return }
 
@@ -79,8 +69,6 @@ final class SyncScheduler {
             scheduleDownloads(pending)
         }
     }
-
-    // MARK: - Work
 
     private func schedule(_ abbr: String, replacingExisting: Bool) {
         lock.lock()
@@ -101,7 +89,6 @@ final class SyncScheduler {
         lock.unlock()
     }
 
-    /// One Bible's worth of SyncWorker.doWork(), including WorkManager's retry loop.
     private func run(_ abbr: String) async {
         var attempt = 0
 
@@ -140,8 +127,6 @@ final class SyncScheduler {
         try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
     }
 
-    /// Only clears the entry if it still belongs to the task that just ended,
-    /// so a replaced download can't evict its replacement.
     private func finished(_ abbr: String, token: UUID) {
         lock.lock()
         if tasks[abbr]?.token == token {
